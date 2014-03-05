@@ -1,6 +1,6 @@
 {
   "name": "omni-ruler",
-  "main": "./lib/omni-ruler",
+  "main": "./lib/omni-ruler-view",
   "version": "0.2.2",
   "description": "Add multiple rulers/wrap guides",
   "repository": "https://github.com/Problematic/omni-ruler",
