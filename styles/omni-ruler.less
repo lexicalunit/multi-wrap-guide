@@ -1,0 +1,12 @@
+@import "syntax-variables";
+
+atom-text-editor::shadow {
+  .omni-ruler {
+    height: 100%;
+    width: 1px;
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    background-color: @syntax-wrap-guide-color;
+  }
+}
