@@ -26,7 +26,7 @@ Then add something like the following under the root `'*'` scope.
 
 ## Styling
 
-You can modify the styles applied to guides created by this package using your `styles.less` file. Open it will the following command.
+You can modify the styles applied to guides created by this package using your `styles.less` file. Open it with the following command.
 
 ```
 Command Palette ➔ Application: Open Your Stylesheet
