@@ -17,3 +17,11 @@ Uses `editor.preferredLineLength` or [language specific setting](http://blog.ato
       120
     ]
 ```
+
+## Future Work
+
+- Allow multiple columns settings per language.
+- Create and remove guides without having to edit `config.cson`.
+- Styling options for guides.
+- Source level documentation.
+- Disable `wrap-guide` package automatically.
