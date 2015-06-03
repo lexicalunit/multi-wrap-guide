@@ -1,11 +1,10 @@
 {CompositeDisposable} = require 'atom'
 
-class OmniRulerView extends HTMLDivElement
+class MultiWrapGuideView extends HTMLDivElement
   initialize: (@editor, @editorElement) ->
     @attachToLines()
     @handleEvents()
-    @updateRulers()
-
+    @updateGuides()
     this
 
   attachToLines: ->
@@ -13,20 +12,20 @@ class OmniRulerView extends HTMLDivElement
     lines?.appendChild(this)
 
   handleEvents: ->
-    updateRulersCallback = => @updateRulers()
+    updateGuidesCallback = => @updateGuides()
 
     subscriptions = new CompositeDisposable
     configSubscriptions = @handleConfigEvents()
-    subscriptions.add atom.config.onDidChange('omni-ruler.columns', updateRulersCallback)
+    subscriptions.add atom.config.onDidChange('multi-wrap-guide.columns', updateGuidesCallback)
     subscriptions.add atom.config.onDidChange 'editor.fontSize', =>
       # setTimeout because we need to wait for the editor measurement to happen
-      setTimeout(updateRulersCallback, 0)
+      setTimeout(updateGuidesCallback, 0)
 
-    subscriptions.add @editor.onDidChangePath(updateRulersCallback)
+    subscriptions.add @editor.onDidChangePath(updateGuidesCallback)
     subscriptions.add @editor.onDidChangeGrammar =>
       configSubscriptions.dispose()
       configSubscriptions = @handleConfigEvents()
-      updateRulersCallback()
+      updateGuidesCallback()
 
     subscriptions.add @editor.onDidDestroy ->
       subscriptions.dispose()
@@ -34,29 +33,29 @@ class OmniRulerView extends HTMLDivElement
 
     subscriptions.add @editorElement.onDidAttach =>
       @attachToLines()
-      updateRulersCallback()
+      updateGuidesCallback()
 
   handleConfigEvents: ->
-    updateRulersCallback = => @updateRulers()
+    updateGuidesCallback = => @updateGuides()
     subscriptions = new CompositeDisposable
     subscriptions.add atom.config.onDidChange(
       'editor.preferredLineLength',
       scope: @editor.getRootScopeDescriptor(),
-      updateRulersCallback
+      updateGuidesCallback
     )
     subscriptions.add atom.config.onDidChange(
       'wrap-guide.enabled',
       scope: @editor.getRootScopeDescriptor(),
-      updateRulersCallback
+      updateGuidesCallback
     )
     subscriptions
 
-  getDefaultColumns: ->
-    [atom.config.get('editor.preferredLineLength', scope: @editor.getRootScopeDescriptor())]
+  getDefaultColumns: (scopeName) ->
+    [atom.config.get('editor.preferredLineLength', scope: [scopeName])]
 
-  getRulersColumns: (path, scopeName) ->
-    customColumns = atom.config.get('omni-ruler.columns')
-    return if Array.isArray(customColumns) then customColumns else @getDefaultColumns()
+  getColumns: (path, scopeName) ->
+    customColumns = atom.config.get('multi-wrap-guide.columns')
+    return if customColumns.length > 0 then customColumns else @getDefaultColumns(scopeName)
 
   isEnabled: ->
     atom.config.get('wrap-guide.enabled', scope: @editor.getRootScopeDescriptor()) ? true
@@ -66,24 +65,24 @@ class OmniRulerView extends HTMLDivElement
     element.classList.add classes...
     element
 
-  updateRulers: ->
-    columns = @getRulersColumns(@editor.getPath(), @editor.getGrammar().scopeName)
+  updateGuides: ->
+    columns = @getColumns(@editor.getPath(), @editor.getGrammar().scopeName)
 
     if columns.length > 0 and @isEnabled()
       while @firstChild
         @removeChild @firstChild
       for column in columns
         columnWidth = @editorElement.getDefaultCharacterWidth() * column
-        ruler = @createElement 'div', 'omni-ruler'
-        ruler.style.left = "#{columnWidth}px"
-        ruler.style.display = 'block'
-        @appendChild ruler
+        guide = @createElement 'div', 'multi-wrap-guide'
+        guide.style.left = "#{columnWidth}px"
+        guide.style.display = 'block'
+        @appendChild guide
       @style.display = 'block'
     else
       @style.display = 'none'
 
 module.exports =
-document.registerElement('omni-ruler',
+document.registerElement('multi-wrap-guide',
   extends: 'div'
-  prototype: OmniRulerView.prototype
+  prototype: MultiWrapGuideView.prototype
 )

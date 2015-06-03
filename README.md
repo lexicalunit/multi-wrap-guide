@@ -1,17 +1,19 @@
-# omni-ruler
+# Multi Wrap Guide
 
-Add multiple rulers/wrap guides
+Provides multiple wrap guides at the columns you specify.
 
-![](http://i.imgur.com/pu9yhoK.png)
+![guides](https://cloud.githubusercontent.com/assets/1903876/7960481/84dfd8b6-09c6-11e5-94a3-a4f946a9d6f2.png)
 
 ## Configuration
-Defaults to one ruler at `editor.preferredLineLength`, or add something like this to your `config.cson` file:
+
+Uses `editor.preferredLineLength` or [language specific setting](http://blog.atom.io/2014/10/31/language-scoped-config.html) if one is available. You can override these defaults by providing something like the following in your `config.cson` file:
 
 ```coffeescript
-'omni-ruler':
-  'columns': [
-    73
-    80
-    100
-  ]
+  'multi-wrap-guide':
+    'columns': [
+      73
+      80
+      100
+      120
+    ]
 ```

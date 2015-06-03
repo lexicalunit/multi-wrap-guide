@@ -1,4 +1,4 @@
-OmniRulerView = require './omni-ruler-view'
+MultiWrapGuideView = require './multi-wrap-guide-view'
 
 module.exports =
   config:
@@ -14,4 +14,4 @@ module.exports =
   activate: ->
     atom.workspace.observeTextEditors (editor) ->
       editorElement = atom.views.getView(editor)
-      omniRulerView = new OmniRulerView().initialize(editor, editorElement)
+      multiWrapGuideView = new MultiWrapGuideView().initialize(editor, editorElement)
