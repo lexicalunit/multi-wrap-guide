@@ -1,7 +1,7 @@
 {
   "name": "multi-wrap-guide",
   "main": "./lib/multi-wrap-guide",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Provides multiple wrap guides",
   "repository": "https://github.com/lexicalunit/multi-wrap-guide",
   "license": "MIT",
