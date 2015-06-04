@@ -1,8 +1,8 @@
 # Multi Wrap Guide
 
-Provides multiple wrap guides at the columns you specify.
+Provides multiple draggable wrap guides.
 
-![guides](https://cloud.githubusercontent.com/assets/1903876/7960481/84dfd8b6-09c6-11e5-94a3-a4f946a9d6f2.png)
+![preview](https://cloud.githubusercontent.com/assets/1903876/7998617/65c03c2a-0b04-11e5-8417-f3f992d1d818.gif)
 
 ## Configuration
 
@@ -32,12 +32,19 @@ You can modify the styles applied to guides created by this package using your `
 Command Palette ➔ Application: Open Your Stylesheet
 ```
 
-Then add modifications to the `atom-text-editor::shadow .multi-wrap-guide` selector. For example, to make the guide lines purple you could add something like the following.
+Then add modifications to the selectors shown below. For example, to make the guide lines purple and the tooltip green:
 
-```css
+```less
 atom-text-editor::shadow {
   .multi-wrap-guide {
-    background-color: pruple;
+
+    .multi-wrap-guide-line {
+      background-color: purple;
+
+      .multi-wrap-guide-tip {
+        background-color: green;
+      }
+    }
   }
 }
 ```
@@ -45,8 +52,12 @@ atom-text-editor::shadow {
 ## Future Work
 
 - Create some spec tests!
-- Source level documentation.
+- Add continuous integration (blocked by spec tests).
 - Create and remove guides without having to edit `config.cson`.
+- Source level documentation.
+- Refactor duplicated code.
+- Settings to enable/disable configuration auto save.
+- Refactor `handleEvents` code?
 - Allow multiple columns settings per language?
-- Disable `wrap-guide` package automatically?
 - Styling options for guides in settings?
+- Improve any performance issues?
