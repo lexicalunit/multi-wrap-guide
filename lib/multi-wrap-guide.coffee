@@ -1,3 +1,4 @@
+{CompositeDisposable} = require 'atom'
 MultiWrapGuideView = require './multi-wrap-guide-view'
 
 module.exports =
@@ -12,6 +13,14 @@ module.exports =
         type: 'integer'
 
   activate: ->
-    atom.workspace.observeTextEditors (editor) ->
+    @subscriptions = new CompositeDisposable
+    atom.workspace.observeTextEditors (editor) =>
       editorElement = atom.views.getView(editor)
-      multiWrapGuideView = new MultiWrapGuideView().initialize(editor, editorElement)
+      multiWrapGuideView = new MultiWrapGuideView editor, editorElement
+      @subscriptions.add editor.onDidDestroy ->
+        multiWrapGuideView.destroy()
+        multiWrapGuideView = null
+
+  deactivate: ->
+    @subscriptions.dispose()
+    @subscriptions = null
