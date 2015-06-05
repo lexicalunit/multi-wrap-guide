@@ -4,7 +4,7 @@ Fully customizable wrap guides at multiple column positions.
 
 **Multiple wrap guides**
 
-![guides](https://cloud.githubusercontent.com/assets/1903876/7999736/87c52ff8-0b16-11e5-8be7-509a803e86d3.png)
+![guides](https://cloud.githubusercontent.com/assets/1903876/8000958/76513892-0b26-11e5-80ab-aa630ccf0635.png)
 
 **Draggable wrap guides**
 
