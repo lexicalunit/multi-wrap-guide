@@ -60,8 +60,6 @@ atom-text-editor::shadow {
 - Create some spec tests!
 - Add continuous integration (blocked by spec tests).
 - Create and remove guides without having to edit `config.cson`.
-- Source level documentation.
-- Refactor much of the codebase to avoid duplication and clutter.
 - Provide keyboard shortcut to quickly toggle guides on/off.
 - Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
