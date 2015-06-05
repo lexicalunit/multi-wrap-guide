@@ -1,7 +1,5 @@
 # Multi Wrap Guide
 
-Provides multiple draggable wrap guides.
-
 ![preview](https://cloud.githubusercontent.com/assets/1903876/7998617/65c03c2a-0b04-11e5-8417-f3f992d1d818.gif)
 
 ## Configuration
@@ -61,3 +59,7 @@ atom-text-editor::shadow {
 - Allow multi-columns settings per language?
 - Styling options for guides in settings?
 - Improve any performance issues?
+
+## Notice
+
+Activating this package disables the default Atom `wrap-guide` package automatically.
