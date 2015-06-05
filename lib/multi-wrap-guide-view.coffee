@@ -8,6 +8,7 @@ class MultiWrapGuideView extends View
     @div class:'multi-wrap-guide-view', ->
 
   initialize: (@editor, @editorElement) ->
+    @columns = []
     @attach()
     @handleEvents()
     @updateGuides()
@@ -24,7 +25,7 @@ class MultiWrapGuideView extends View
 
   attach: ->
     lines = $(@editorElement.rootElement?.querySelector?('.lines'))
-    lines?.append(this)
+    lines?.append this
 
   toggle: ->
     @visible = not @visible
@@ -38,7 +39,7 @@ class MultiWrapGuideView extends View
 
     @subscriptions = new CompositeDisposable
     @configSubscriptions = @handleConfigEvents()
-    @subscriptions.add atom.config.onDidChange('multi-wrap-guide.columns', updateGuidesCallback)
+    @subscriptions.add atom.config.onDidChange 'multi-wrap-guide.columns', updateGuidesCallback
     @subscriptions.add atom.config.onDidChange 'editor.fontSize', ->
       # setTimeout because we need to wait for the editor measurement to happen
       setTimeout(updateGuidesCallback, 0)
@@ -46,7 +47,8 @@ class MultiWrapGuideView extends View
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:toggle': => @toggle()
 
-    @subscriptions.add @editor.onDidChangePath(updateGuidesCallback)
+    @subscriptions.add @editor.onDidChangeScrollLeft updateGuidesCallback
+    @subscriptions.add @editor.onDidChangePath updateGuidesCallback
     @subscriptions.add @editor.onDidChangeGrammar =>
       @configSubscriptions.dispose()
       @configSubscriptions = @handleConfigEvents()
@@ -65,31 +67,31 @@ class MultiWrapGuideView extends View
     subscriptions.add atom.config.onDidChange(
       'editor.preferredLineLength',
       scope: @editor.getRootScopeDescriptor(),
-      updateGuidesCallback
-    )
+      updateGuidesCallback)
     subscriptions.add atom.config.onDidChange(
       'wrap-guide.enabled',
       scope: @editor.getRootScopeDescriptor(),
-      updateGuidesCallback
-    )
+      updateGuidesCallback)
     subscriptions.add atom.config.onDidChange(
       'multi-wrap-guide.enabled',
-      updateGuidesCallback
-    )
+      updateGuidesCallback)
     subscriptions
 
   getDefaultColumns: (scopeName) ->
-    [atom.config.get('editor.preferredLineLength', scope: [scopeName])]
+    [atom.config.get 'editor.preferredLineLength', scope: [scopeName]]
 
   getColumns: (path, scopeName) ->
-    customColumns = atom.config.get('multi-wrap-guide.columns')
-    return if customColumns.length > 0 then customColumns else @getDefaultColumns(scopeName)
+    unless @columns.length
+      customColumns = atom.config.get('multi-wrap-guide.columns')
+      @columns = if customColumns.length > 0 then customColumns else @getDefaultColumns scopeName
+    @columns
 
   isEnabled: ->
-    wrap_enabled = atom.config.get('wrap-guide.enabled', scope: @editor.getRootScopeDescriptor())
+    wrap_enabled = atom.config.get 'wrap-guide.enabled',
+      scope: @editor.getRootScopeDescriptor()
     if wrap_enabled? and not wrap_enabled
       return false
-    return atom.config.get('multi-wrap-guide.enabled')
+    return atom.config.get 'multi-wrap-guide.enabled'
 
   createElement: (type, classes...) ->
     element = $(document.createElement(type))
@@ -99,25 +101,25 @@ class MultiWrapGuideView extends View
 
   mouseDown: (e) =>
     guide = $(e.data[0])
-    @setTooltip guide
     guide.addClass 'drag'
     guide.mouseup guide, @mouseUp
     guide.mousemove guide, @mouseMove
     guide.mouseleave guide, @mouseLeave
+    false
 
   mouseMove: (e) =>
     guide = $(e.data[0])
     scrollView = $(@editorElement.rootElement?.querySelector?('.scroll-view'))[0]
     newLeft = e.pageX - $(@editorElement).offset().left - scrollView.offsetLeft
-    guide.css('left', "#{newLeft}px")
+    guide.css 'left', "#{newLeft}px"
     @setTooltip guide
     false
 
   mouseUp: (e) =>
     guide = $(e.data[0])
     @dragEnd guide
-    @snapToColumn guide
     @saveColumns()
+    @updateGuides()
 
   mouseLeave: (e) =>
     @dragEnd $(e.data[0])
@@ -131,39 +133,36 @@ class MultiWrapGuideView extends View
     false
 
   setTooltip: (guide) ->
-    tip = guide.find('.multi-wrap-guide-tip')
-    dropOffset = parseInt(guide.css('left'))
-    columnWidth = @editorElement.getDefaultCharacterWidth()
-    leftSide = (dropOffset // columnWidth) * columnWidth
-    rightSide = (dropOffset // columnWidth + 1) * columnWidth
+    # FIXME: incorrect snapping behaviour when scroll left is > 0?
+    dropOffset = parseInt(guide.css 'left')
+    dropOffset += @editor.getScrollLeft() if @editorElement.hasTiledRendering
+    charWidth = @editorElement.getDefaultCharacterWidth()
+    leftSide = (dropOffset // charWidth) * charWidth
+    leftSide += @editor.getScrollLeft() if @editorElement.hasTiledRendering
+    rightSide = (dropOffset // charWidth + 1) * charWidth
+    rightSide += @editor.getScrollLeft() if @editorElement.hasTiledRendering
     if Math.abs(dropOffset - leftSide) < Math.abs(dropOffset - rightSide)
-      tip.text(leftSide // columnWidth)
+      leftSide -= @editor.getScrollLeft() if @editorElement.hasTiledRendering
+      column = leftSide // charWidth
     else
-      tip.text(rightSide // columnWidth)
-
-  snapToColumn: (guide) ->
-    dropOffset = parseInt(guide.css('left'))
-    columnWidth = @editorElement.getDefaultCharacterWidth()
-    leftSide = (dropOffset // columnWidth) * columnWidth
-    rightSide = (dropOffset // columnWidth + 1) * columnWidth
-    if Math.abs(dropOffset - leftSide) < Math.abs(dropOffset - rightSide)
-      guide.css 'left', "#{leftSide}px"
-    else
-      guide.css 'left', "#{rightSide}px"
+      rightSide -= @editor.getScrollLeft() if @editorElement.hasTiledRendering
+      column = rightSide // charWidth
+    tip = guide.find '.multi-wrap-guide-tip'
+    tip.text column
 
   saveColumns: ->
-    return unless atom.config.get('multi-wrap-guide.autoSaveChanges')
+    @columns = []
+    for child in @children()
+      tip = $(child).find('.multi-wrap-guide-tip')
+      @columns.push parseInt(tip.text())
+    return unless atom.config.get 'multi-wrap-guide.autoSaveChanges'
     customColumns = atom.config.get('multi-wrap-guide.columns')
     if customColumns.length > 0
-      columnWidth = @editorElement.getDefaultCharacterWidth()
-      columns = (parseInt($(child).css('left')) / columnWidth for child in @children())
-      atom.config.set('multi-wrap-guide.columns', columns)
+      atom.config.set 'multi-wrap-guide.columns', @columns
     else
       scope = atom.workspace.getActiveTextEditor()?.getGrammar()?.scopeName
       return unless scope?
-      columnWidth = @editorElement.getDefaultCharacterWidth()
-      column = parseInt($(@children()[0]).css('left')) / columnWidth
-      atom.config.set 'editor.preferredLineLength', column,
+      atom.config.set 'editor.preferredLineLength', @columns[0],
         scopeSelector: ".#{scope}"
 
   updateGuides: =>
@@ -173,13 +172,15 @@ class MultiWrapGuideView extends View
     if columns.length > 0
       for column in columns
         columnWidth = @editorElement.getDefaultCharacterWidth() * column
+        columnWidth -= @editor.getScrollLeft() if @editorElement.hasTiledRendering
         guide = @createElement 'div', 'multi-wrap-guide'
         tip = @createElement 'div', 'multi-wrap-guide-tip'
         line = @createElement 'div', 'multi-wrap-guide-line'
         line.append tip
         guide.append line
-        guide.css('left', "#{columnWidth}px")
+        guide.css 'left', "#{columnWidth}px"
         guide.mousedown guide, @mouseDown
+        @setTooltip guide
         @append guide
       @css 'display', 'block'
     else
