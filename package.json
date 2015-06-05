@@ -2,7 +2,7 @@
   "name": "multi-wrap-guide",
   "main": "./lib/multi-wrap-guide",
   "version": "0.4.0",
-  "description": "Provides multiple wrap guides",
+  "description": "Provides multiple draggable wrap guides.",
   "repository": "https://github.com/lexicalunit/multi-wrap-guide",
   "license": "MIT",
   "coffeelintConfig": {
