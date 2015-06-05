@@ -62,7 +62,7 @@ class MultiWrapGuideView extends View
       updateGuidesCallback()
 
   handleConfigEvents: ->
-    updateGuidesCallback = => @updateGuides()
+    updateGuidesCallback = => @updateGuides(true)
     subscriptions = new CompositeDisposable
     subscriptions.add atom.config.onDidChange(
       'editor.preferredLineLength',
@@ -75,6 +75,9 @@ class MultiWrapGuideView extends View
     subscriptions.add atom.config.onDidChange(
       'multi-wrap-guide.enabled',
       updateGuidesCallback)
+    subscriptions.add atom.config.onDidChange(
+      'multi-wrap-guide.columns',
+      updateGuidesCallback)
     subscriptions
 
   getDefaultColumns: (scopeName) ->
@@ -82,7 +85,7 @@ class MultiWrapGuideView extends View
 
   getColumns: (path, scopeName) ->
     unless @columns.length
-      customColumns = atom.config.get('multi-wrap-guide.columns')
+      customColumns = atom.config.get 'multi-wrap-guide.columns'
       @columns = if customColumns.length > 0 then customColumns else @getDefaultColumns scopeName
     @columns
 
@@ -165,7 +168,9 @@ class MultiWrapGuideView extends View
       atom.config.set 'editor.preferredLineLength', @columns[0],
         scopeSelector: ".#{scope}"
 
-  updateGuides: =>
+  updateGuides: (configChanged = false) =>
+    if configChanged
+      @columns = []
     @empty()
     return unless @isEnabled()
     columns = @getColumns(@editor.getPath(), @editor.getGrammar().scopeName)
