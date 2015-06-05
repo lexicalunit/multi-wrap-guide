@@ -143,9 +143,12 @@ class MultiWrapGuideView extends View
         @saveColumns()
       ), 0)
 
-  # Private: Adds a new guide at nearest column to the given page x position in pixels.
+  # Private: Adds a new guide at nearest column to the given page x position in pixels, if one doesn't exist.
   createGuide: (x) ->
-    @columns.push @columnAt(x)
+    column = @columnAt(x)
+    i = @columns.indexOf(column)
+    if i == -1
+      @columns.push @columnAt(x)
 
   # Private: Removes the guide at nearest column to the given page x position in pixels, if one exists.
   removeGuide: (x) ->
@@ -218,6 +221,7 @@ class MultiWrapGuideView extends View
   # Private: Saves current column state, also saves to config if auto save is enabled.
   saveColumns: ->
     @columns = (parseInt(tip.textContent) for tip in @find 'div.multi-wrap-guide-tip')
+    @columns = $.unique(@columns.sort (a, b) -> a - b)
     return unless atom.config.get 'multi-wrap-guide.autoSaveChanges'
     customColumns = atom.config.get 'multi-wrap-guide.columns'
     if customColumns.length > 0
