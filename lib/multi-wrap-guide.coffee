@@ -3,7 +3,7 @@ MultiWrapGuideView = require './multi-wrap-guide-view'
 
 module.exports =
   config:
-    enabled:
+    autoSaveChanges:
       type: 'boolean'
       default: true
     columns:
@@ -11,6 +11,9 @@ module.exports =
       type: 'array'
       items:
         type: 'integer'
+    enabled:
+      type: 'boolean'
+      default: true
 
   activate: ->
     atom.packages.getLoadedPackage('wrap-guide')?.deactivate()

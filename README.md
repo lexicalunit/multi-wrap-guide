@@ -56,8 +56,8 @@ atom-text-editor::shadow {
 - Create and remove guides without having to edit `config.cson`.
 - Source level documentation.
 - Refactor duplicated code.
-- Settings to enable/disable configuration auto save.
+- Better way to capture mouse?
 - Refactor `handleEvents` code?
-- Allow multiple columns settings per language?
+- Allow multi-columns settings per language?
 - Styling options for guides in settings?
 - Improve any performance issues?

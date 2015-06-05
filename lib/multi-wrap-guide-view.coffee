@@ -141,6 +141,7 @@ class MultiWrapGuideView extends View
       guide.css 'left', "#{rightSide}px"
 
   saveColumns: ->
+    return unless atom.config.get('multi-wrap-guide.autoSaveChanges')
     customColumns = atom.config.get('multi-wrap-guide.columns')
     if customColumns.length > 0
       columnWidth = @editorElement.getDefaultCharacterWidth()
