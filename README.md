@@ -12,9 +12,9 @@ Fully customizable wrap guides at multiple column positions.
 
 **Create and remove guides easily**
 
-![before](https://cloud.githubusercontent.com/assets/1903876/8014214/8778f16e-0b94-11e5-921a-4a3126251db6.png)
-![context](https://cloud.githubusercontent.com/assets/1903876/8014215/877b79e8-0b94-11e5-8c88-7e1ba4270484.png)
-![after](https://cloud.githubusercontent.com/assets/1903876/8014216/877d2dd8-0b94-11e5-8705-9f43ddeba541.png)
+![before](https://cloud.githubusercontent.com/assets/1903876/8016975/f1a2fab4-0bb0-11e5-9933-365cfe59ea26.png)
+![context](https://cloud.githubusercontent.com/assets/1903876/8016976/f1a58c20-0bb0-11e5-8f58-5cdfdcebfd50.png)
+![after](https://cloud.githubusercontent.com/assets/1903876/8016977/f1a75c6c-0bb0-11e5-9675-7f15bc80038d.png)
 
 ## Configuration
 
