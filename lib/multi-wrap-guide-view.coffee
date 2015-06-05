@@ -61,6 +61,10 @@ class MultiWrapGuideView extends View
       scope: @editor.getRootScopeDescriptor(),
       updateGuidesCallback
     )
+    subscriptions.add atom.config.onDidChange(
+      'multi-wrap-guide.enabled',
+      updateGuidesCallback
+    )
     subscriptions
 
   getDefaultColumns: (scopeName) ->
@@ -71,7 +75,10 @@ class MultiWrapGuideView extends View
     return if customColumns.length > 0 then customColumns else @getDefaultColumns(scopeName)
 
   isEnabled: ->
-    atom.config.get('wrap-guide.enabled', scope: @editor.getRootScopeDescriptor()) ? true
+    wrap_enabled = atom.config.get('wrap-guide.enabled', scope: @editor.getRootScopeDescriptor())
+    if wrap_enabled? and not wrap_enabled
+      return false
+    return atom.config.get('multi-wrap-guide.enabled')
 
   createElement: (type, classes...) ->
     element = $(document.createElement(type))
@@ -148,9 +155,10 @@ class MultiWrapGuideView extends View
         scopeSelector: ".#{scope}"
 
   updateGuides: =>
+    @empty()
+    return unless @isEnabled()
     columns = @getColumns(@editor.getPath(), @editor.getGrammar().scopeName)
-    if columns.length > 0 and @isEnabled()
-      @empty()
+    if columns.length > 0
       for column in columns
         columnWidth = @editorElement.getDefaultCharacterWidth() * column
         guide = @createElement 'div', 'multi-wrap-guide'
