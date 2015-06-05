@@ -125,7 +125,8 @@
     "atom": ">=0.194.0 <2.0.0"
   },
   "dependencies": {
-    "jquery": "^2.1.4"
+    "jquery": "^2.1.4",
+    "sub-atom": "^1.0.0"
   },
   "keywords": [
     "wrap",

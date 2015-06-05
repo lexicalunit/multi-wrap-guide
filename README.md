@@ -16,8 +16,6 @@ Fully customizable wrap guides at multiple column positions.
 ![context](https://cloud.githubusercontent.com/assets/1903876/8014215/877b79e8-0b94-11e5-8c88-7e1ba4270484.png)
 ![after](https://cloud.githubusercontent.com/assets/1903876/8014216/877d2dd8-0b94-11e5-8705-9f43ddeba541.png)
 
-> Note that the create and remove guide commands only work from the context menu, not the command palette.
-
 ## Configuration
 
 By default, Multi Wrap Guide will use your `editor.preferredLineLength` setting or [language specific settings](http://blog.atom.io/2014/10/31/language-scoped-config.html). You can override this by editing your `config.cson` file to provide custom settings. First open the file using the following command.
@@ -51,10 +49,8 @@ Then add modifications to the selectors shown below. For example, to make the gu
 ```less
 atom-text-editor::shadow {
   .multi-wrap-guide {
-
     .multi-wrap-guide-line {
       background-color: purple;
-
       .multi-wrap-guide-tip {
         background-color: green;
       }
@@ -63,12 +59,32 @@ atom-text-editor::shadow {
 }
 ```
 
+Or if you want to get really fancy, you can set a different color for each column:
+
+```less
+atom-text-editor::shadow {
+  .multi-wrap-guide:nth-child(1) .multi-wrap-guide-line {
+    background-color: fadeout(white, 70%);
+  }
+  .multi-wrap-guide:nth-child(2) .multi-wrap-guide-line {
+    background-color: fadeout(green, 70%);
+  }
+  .multi-wrap-guide:nth-child(3) .multi-wrap-guide-line {
+    background-color: fadeout(yellow, 70%);
+  }
+  .multi-wrap-guide:nth-child(4) .multi-wrap-guide-line {
+    background-color: fadeout(red, 70%);
+  }
+}
+```
+
+![colors](https://cloud.githubusercontent.com/assets/1903876/8016897/a62f5808-0baf-11e5-9101-0e86638308e7.png)
+
 ## Future Work
 
 - Create some spec tests!
 - Provide keyboard shortcut to quickly toggle guides on/off.
 - Add continuous integration (blocked by creation of spec tests).
-- Hide create/remove commands from command palette (blocked by [atom/command-palette#35](https://github.com/atom/command-palette/issues/35))
 - Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
 - Allow multi-columns settings per language?
