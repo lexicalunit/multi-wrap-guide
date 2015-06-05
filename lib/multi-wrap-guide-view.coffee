@@ -11,6 +11,7 @@ class MultiWrapGuideView extends View
     @attach()
     @handleEvents()
     @updateGuides()
+    @visible = true
     this
 
   destroy: ->
@@ -25,6 +26,13 @@ class MultiWrapGuideView extends View
     lines = $(@editorElement.rootElement?.querySelector?('.lines'))
     lines?.append(this)
 
+  toggle: ->
+    @visible = not @visible
+    if @visible
+      @updateGuides()
+    else
+      @empty()
+
   handleEvents: ->
     updateGuidesCallback = => @updateGuides()
 
@@ -34,6 +42,9 @@ class MultiWrapGuideView extends View
     @subscriptions.add atom.config.onDidChange 'editor.fontSize', ->
       # setTimeout because we need to wait for the editor measurement to happen
       setTimeout(updateGuidesCallback, 0)
+
+    @subscriptions.add atom.commands.add 'atom-text-editor',
+      'multi-wrap-guide:toggle': => @toggle()
 
     @subscriptions.add @editor.onDidChangePath(updateGuidesCallback)
     @subscriptions.add @editor.onDidChangeGrammar =>

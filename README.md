@@ -1,5 +1,13 @@
 # Multi Wrap Guide
 
+Fully customizable wrap guides at multiple column positions.
+
+**Multiple wrap guides**
+
+![guides](https://cloud.githubusercontent.com/assets/1903876/7999736/87c52ff8-0b16-11e5-8be7-509a803e86d3.png)
+
+**Draggable wrap guides**
+
 ![preview](https://cloud.githubusercontent.com/assets/1903876/7998617/65c03c2a-0b04-11e5-8417-f3f992d1d818.gif)
 
 ## Configuration

@@ -1,0 +1,11 @@
+'menu': [
+    {
+      'label': 'Packages'
+      'submenu': [
+        'label': 'Multi Wrap Guide'
+        'submenu': [
+          { 'label': 'Toggle', 'command': 'multi-wrap-guide:toggle' }
+        ]
+      ]
+    }
+  ]
