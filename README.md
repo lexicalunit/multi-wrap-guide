@@ -54,6 +54,7 @@ atom-text-editor::shadow {
 - Create and remove guides without having to edit `config.cson`.
 - Source level documentation.
 - Refactor duplicated code.
+- Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
 - Refactor `handleEvents` code?
 - Allow multi-columns settings per language?
