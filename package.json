@@ -126,5 +126,10 @@
   },
   "dependencies": {
     "jquery": "^2.1.4"
-  }
+  },
+  "keywords": [
+    "wrap",
+    "guide",
+    "ruler"
+  ]
 }
