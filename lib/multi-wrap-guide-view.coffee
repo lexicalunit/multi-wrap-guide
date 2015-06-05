@@ -5,11 +5,13 @@ $ = require 'jquery'
 module.exports =
 class MultiWrapGuideView extends View
   columns: []
-  visible: true
+  doCreateGuide: false
+  doRemoveGuide: false
   editor: null
   editorElement: null
-  scrollElement: null
   linesView: null
+  scrollElement: null
+  visible: true
 
   @content: ->
     @div class:'multi-wrap-guide-view'
@@ -26,6 +28,7 @@ class MultiWrapGuideView extends View
 
   # Public: Destroys all wrap guides.
   destroy: ->
+    @linesView?.unbind 'mousedown', @mouseDownLines
     @linesView?.find('div.multi-wrap-guide')?.empty().remove()
     @subscriptions?.dispose()
     @subscriptions = null
@@ -35,6 +38,7 @@ class MultiWrapGuideView extends View
   # Private: Attach wrap guides to editor.
   attach: ->
     @linesView?.append this
+    @linesView?.mousedown @mouseDownLines
 
   # Private: Toggles wrap guides on and off.
   toggle: ->
@@ -52,8 +56,6 @@ class MultiWrapGuideView extends View
     @subscriptions.add atom.config.onDidChange 'editor.fontSize', ->
       # setTimeout because we need to wait for the editor measurement to happen
       setTimeout showGuidesCallback, 0
-    @subscriptions.add atom.commands.add 'atom-text-editor',
-      'multi-wrap-guide:toggle': => @toggle()
     @subscriptions.add @editor.onDidChangeScrollLeft showGuidesCallback
     @subscriptions.add @editor.onDidChangePath showGuidesCallback
     @subscriptions.add @editor.onDidChangeGrammar =>
@@ -65,6 +67,12 @@ class MultiWrapGuideView extends View
     @subscriptions.add @editorElement.onDidAttach =>
       @attach()
       showGuidesCallback()
+    @subscriptions.add atom.commands.add 'atom-text-editor',
+      'multi-wrap-guide:create-guide': => @doCreateGuide = true
+    @subscriptions.add atom.commands.add 'atom-text-editor',
+      'multi-wrap-guide:remove-guide': => @doRemoveGuide = true
+    @subscriptions.add atom.commands.add 'atom-text-editor',
+      'multi-wrap-guide:toggle': => @toggle()
 
   # Private: Sets up wrap guide configuration change event handlers.
   handleConfigEvents: ->
@@ -110,8 +118,50 @@ class MultiWrapGuideView extends View
       element.addClass c
     element
 
+  # Private: Returns the column at the given page x position in piexls.
+  columnAt: (x) ->
+    x += @editor.getScrollLeft() if @editorElement.hasTiledRendering
+    charWidth = @editorElement.getDefaultCharacterWidth()
+    leftSide = (x // charWidth) * charWidth
+    rightSide = (x // charWidth + 1) * charWidth
+    if Math.abs(x - leftSide) < Math.abs(x - rightSide)
+      column = leftSide // charWidth
+    else
+      column = rightSide // charWidth
+    column
+
+  # Private: Handles context menu item clicks.
+  handleContextClick: (e) ->
+    @editPositionX = e.pageX - $(@editorElement).offset().left - @scrollElement.offsetLeft
+    # setTimeout to allow command dispatch to happen first
+    setTimeout((=>
+        if @doCreateGuide
+          @createGuide @editPositionX
+        else if @doRemoveGuide
+          @removeGuide @editPositionX
+        @showGuides()
+        @saveColumns()
+      ), 0)
+
+  # Private: Adds a new guide at nearest column to the given page x position in pixels.
+  createGuide: (x) ->
+    @columns.push @columnAt(x)
+
+  # Private: Removes the guide at nearest column to the given page x position in pixels, if one exists.
+  removeGuide: (x) ->
+    i = @columns.indexOf(@columnAt(x))
+    if i > -1
+      @columns.splice(i, 1)
+
+  # Private: Handles mouse down events on the lines view, to capture context menu clicks.
+  mouseDownLines: (e) =>
+    return unless e.button
+    @doCreateGuide = @doRemoveGuide = false
+    @handleContextClick e
+
   # Private: Mouse down event handler, initiates guide dragging.
   mouseDown: (e) =>
+    return if e.button
     guide = $(e.data[0])
     guide.addClass 'drag'
     guide.mouseup guide, @mouseUp
@@ -157,15 +207,7 @@ class MultiWrapGuideView extends View
   # Private: Sets the tip text based on the guide's current position.
   # Pre-condition: The tip element must be appended to the guide.
   setTip: (guide) ->
-    dropOffset = parseInt(guide.css 'left')
-    dropOffset += @editor.getScrollLeft() if @editorElement.hasTiledRendering
-    charWidth = @editorElement.getDefaultCharacterWidth()
-    leftSide = (dropOffset // charWidth) * charWidth
-    rightSide = (dropOffset // charWidth + 1) * charWidth
-    if Math.abs(dropOffset - leftSide) < Math.abs(dropOffset - rightSide)
-      column = leftSide // charWidth
-    else
-      column = rightSide // charWidth
+    column = @columnAt parseInt(guide.css 'left')
     @setTipColumn guide, column
 
   # Private: Sets the tip text to be the given column.
@@ -186,10 +228,12 @@ class MultiWrapGuideView extends View
       atom.config.set 'editor.preferredLineLength', @columns[0],
         scopeSelector: ".#{scope}"
 
+  # Private: Updates guides from config and shows them.
   updateGuides: ->
     @updateColumns @editor.getPath(), @editor.getGrammar().scopeName
     @showGuides()
 
+  # Private: Redraws current guides.
   showGuides: =>
     @empty()
     return unless @isEnabled()

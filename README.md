@@ -10,6 +10,14 @@ Fully customizable wrap guides at multiple column positions.
 
 ![preview](https://cloud.githubusercontent.com/assets/1903876/7998617/65c03c2a-0b04-11e5-8417-f3f992d1d818.gif)
 
+**Create and remove guides easily**
+
+![before](https://cloud.githubusercontent.com/assets/1903876/8014214/8778f16e-0b94-11e5-921a-4a3126251db6.png)
+![context](https://cloud.githubusercontent.com/assets/1903876/8014215/877b79e8-0b94-11e5-8c88-7e1ba4270484.png)
+![after](https://cloud.githubusercontent.com/assets/1903876/8014216/877d2dd8-0b94-11e5-8705-9f43ddeba541.png)
+
+> Note that the create and remove guide commands only work from the context menu, not the command palette.
+
 ## Configuration
 
 By default, Multi Wrap Guide will use your `editor.preferredLineLength` setting or [language specific settings](http://blog.atom.io/2014/10/31/language-scoped-config.html). You can override this by editing your `config.cson` file to provide custom settings. First open the file using the following command.
@@ -58,12 +66,11 @@ atom-text-editor::shadow {
 ## Future Work
 
 - Create some spec tests!
-- Add continuous integration (blocked by spec tests).
-- Create and remove guides without having to edit `config.cson`.
 - Provide keyboard shortcut to quickly toggle guides on/off.
+- Add continuous integration (blocked by creation of spec tests).
+- Hide create/remove commands from command palette (blocked by [atom/command-palette#35](https://github.com/atom/command-palette/issues/35))
 - Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
-- Refactor `handleEvents` code?
 - Allow multi-columns settings per language?
 - Styling options for guides in settings?
 - Improve any performance issues?

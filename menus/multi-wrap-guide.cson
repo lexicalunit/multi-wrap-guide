@@ -1,3 +1,14 @@
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Multi Wrap Guide'
+      'submenu': [
+        { 'label': 'Create Guide', 'command': 'multi-wrap-guide:create-guide' }
+        { 'label': 'Remove Guide', 'command': 'multi-wrap-guide:remove-guide' }
+      ]
+    }
+  ]
+
 'menu': [
     {
       'label': 'Packages'
