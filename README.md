@@ -88,7 +88,6 @@ atom-text-editor::shadow {
 - Add continuous integration (blocked by creation of spec tests).
 - Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
-- Allow multi-columns settings per language?
 - Styling options for guides in settings?
 - Improve any performance issues?
 
