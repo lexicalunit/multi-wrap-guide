@@ -16,6 +16,8 @@
         'label': 'Multi Wrap Guide'
         'submenu': [
           { 'label': 'Toggle', 'command': 'multi-wrap-guide:toggle' }
+          { 'label': 'Lock', 'command': 'multi-wrap-guide:lock' }
+          { 'label': 'Unlock', 'command': 'multi-wrap-guide:unlock' }
         ]
       ]
     }

@@ -14,6 +14,9 @@ module.exports =
     enabled:
       type: 'boolean'
       default: true
+    locked:
+      type: 'boolean'
+      default: false
 
   activate: ->
     atom.packages.getLoadedPackage('wrap-guide')?.deactivate()

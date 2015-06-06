@@ -10,6 +10,7 @@ class MultiWrapGuideView extends View
   editor: null
   editorElement: null
   linesView: null
+  locked: false
   scrollElement: null
   subs: null
   visible: true
@@ -20,6 +21,7 @@ class MultiWrapGuideView extends View
   # Public: Creates new wrap guide view for given editor.
   initialize: (@editor) ->
     @subs = new SubAtom
+    @locked = atom.config.get 'multi-wrap-guide.locked'
     @editorElement = atom.views.getView editor
     @scrollElement = @editorElement.rootElement?.querySelector?('div.scroll-view')
     @linesView = $(@editorElement.rootElement?.querySelector?('div.lines'))
@@ -114,6 +116,10 @@ class MultiWrapGuideView extends View
         @saveColumns()
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:toggle': => @toggle()
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'multi-wrap-guide:lock': => @lock()
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'multi-wrap-guide:unlock': => @unlock()
 
   # Private: Sets up wrap guide configuration change event handlers.
   handleConfigEvents: ->
@@ -133,6 +139,11 @@ class MultiWrapGuideView extends View
     subscriptions.add atom.config.onDidChange(
       'multi-wrap-guide.columns',
       updateGuidesCallback)
+    subscriptions.add atom.config.onDidChange 'multi-wrap-guide.locked', (locked) =>
+      if locked.newValue
+        @lock()
+      else
+        @unlock()
     subscriptions
 
   # Private: Gets default wrap guide column from config.
@@ -172,8 +183,25 @@ class MultiWrapGuideView extends View
     if i > -1
       @columns.splice(i, 1)
 
+  # Private: Locks guides so they can't be dragged.
+  lock: ->
+    for guide in @children()
+      guide.classList.remove 'draggable'
+    @locked = true
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    atom.config.set 'multi-wrap-guide.locked', @locked
+
+  # Private: Unlocks guides so they can be dragged.
+  unlock: ->
+    for guide in @children()
+      guide.classList.add 'draggable'
+    @locked = false
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    atom.config.set 'multi-wrap-guide.locked', @locked
+
   # Private: Mouse down event handler, initiates guide dragging.
   mouseDown: (e) =>
+    return if @locked
     return if e.button
     guide = $(e.data[0])
     guide.addClass 'drag'
@@ -254,6 +282,7 @@ class MultiWrapGuideView extends View
     return unless @isEnabled()
     for column in @columns
       guide = @createElement 'div', 'multi-wrap-guide'
+      guide.addClass 'draggable' unless @locked
       tip = @createElement 'div', 'multi-wrap-guide-tip'
       line = @createElement 'div', 'multi-wrap-guide-line'
       line.append tip
