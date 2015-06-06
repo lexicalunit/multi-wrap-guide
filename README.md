@@ -83,7 +83,6 @@ atom-text-editor::shadow {
 ## Future Work
 
 - Create some spec tests!
-- Provide keyboard shortcut to quickly toggle guides on/off.
 - Add continuous integration (blocked by creation of spec tests).
 - Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
