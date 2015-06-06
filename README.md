@@ -10,6 +10,8 @@ Fully customizable wrap guides at multiple column positions.
 
 ![preview](https://cloud.githubusercontent.com/assets/1903876/7998617/65c03c2a-0b04-11e5-8417-f3f992d1d818.gif)
 
+> Easily disable draggable guides by using the `Multi Wrap Guide: Lock Guides` command. This is especially useful when draggable guides are interfering with text selection.
+
 **Create and remove guides easily**
 
 ![before](https://cloud.githubusercontent.com/assets/1903876/8016975/f1a2fab4-0bb0-11e5-9933-365cfe59ea26.png)
