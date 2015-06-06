@@ -3,11 +3,15 @@
     {
       'label': 'Multi Wrap Guide'
       'submenu': [
-        { 'label': '↓ Create Guide', 'command': 'multi-wrap-guide:create-guide' }
-        { 'label': '⃠ Remove Guide', 'command': 'multi-wrap-guide:remove-guide' }
-        { 'label': '◐ Toggle', 'command': 'multi-wrap-guide:toggle' }
-        { 'label': '🔒Lock', 'command': 'multi-wrap-guide:lock' }
-        { 'label': '🔓Unlock', 'command': 'multi-wrap-guide:unlock' }
+        { 'label': 'Create Guide', 'command': 'multi-wrap-guide:create-guide' }
+        { 'label': 'Remove Guide', 'command': 'multi-wrap-guide:remove-guide' }
+        { 'type': 'separator'}
+        { 'label': '🔒Lock Guides', 'command': 'multi-wrap-guide:lock' }
+        { 'label': '🔓Unlock Guides', 'command': 'multi-wrap-guide:unlock'}
+        { 'type': 'separator'}
+        { 'label': 'Toggle Guides', 'command': 'multi-wrap-guide:toggle' }
+        { 'label': 'Disable Guides', 'command': 'multi-wrap-guide:disable' }
+        { 'label': 'Enable Guides', 'command': 'multi-wrap-guide:enable' }
       ]
     }
   ]
@@ -18,9 +22,12 @@
       'submenu': [
         'label': 'Multi Wrap Guide'
         'submenu': [
-          { 'label': '◐ Toggle', 'command': 'multi-wrap-guide:toggle' }
-          { 'label': '🔒Lock', 'command': 'multi-wrap-guide:lock' }
-          { 'label': '🔓Unlock', 'command': 'multi-wrap-guide:unlock' }
+          { 'label': '🔒Lock Guides', 'command': 'multi-wrap-guide:lock' }
+          { 'label': '🔓Unlock Guides', 'command': 'multi-wrap-guide:unlock' }
+          { 'type': 'separator'}
+          { 'label': 'Toggle Guides', 'command': 'multi-wrap-guide:toggle' }
+          { 'label': 'Disable Guides', 'command': 'multi-wrap-guide:disable' }
+          { 'label': 'Enable Guides', 'command': 'multi-wrap-guide:enable' }
         ]
       ]
     }

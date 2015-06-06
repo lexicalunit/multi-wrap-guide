@@ -5,26 +5,29 @@ SubAtom = require 'sub-atom'
 
 module.exports =
 class MultiWrapGuideView extends View
-  columns: []
-  currentCursorColumn: null
-  editor: null
-  editorElement: null
-  linesView: null
-  locked: false
-  scrollElement: null
-  subs: null
-  visible: true
+  columns: []                 # Current column widths.
+  currentCursorColumn: null   # Current mouse position in column width.
+  editor: null                # Attached editor.
+  editorElement: null         # Attached editor element.
+  emitter: null               # Package emitter object.
+  enabled: true               # True iff guide lines are enabled.
+  linesView: null             # Attached lines view.
+  locked: false               # True iff guide lines are locked.
+  scrollElement: null         # Attached scroll element.
+  subs: null                  # SubAtom object.
+  visible: true               # True iff guide lines are currently visible.
 
   @content: ->
-    @div class:'multi-wrap-guide-view'
+    @div class: 'multi-wrap-guide-view'
 
   # Public: Creates new wrap guide view for given editor.
-  initialize: (@editor) ->
+  initialize: (@editor, @emitter) ->
     @subs = new SubAtom
+    scope = @editor.getRootScopeDescriptor()
     @locked = atom.config.get 'multi-wrap-guide.locked'
     @editorElement = atom.views.getView editor
-    @scrollElement = @editorElement.rootElement?.querySelector?('div.scroll-view')
-    @linesView = $(@editorElement.rootElement?.querySelector?('div.lines'))
+    @scrollElement = @editorElement.rootElement.querySelector 'div.scroll-view'
+    @linesView = $(@editorElement.rootElement.querySelector 'div.lines')
     @attach()
     @handleEvents()
     @updateGuides()
@@ -32,13 +35,13 @@ class MultiWrapGuideView extends View
 
   # Public: Destroys all wrap guides.
   destroy: ->
-    @linesView?.find('div.multi-wrap-guide')?.empty().remove()
+    @linesView.find('div.multi-wrap-guide').empty().remove()
     @subscriptions?.dispose()
-    @subscriptions = null
+    @subscriptions = null if @subscriptions
     @subs?.dispose()
-    @subs = null
+    @subs = null if @subs
     @configSubscriptions?.dispose()
-    @configSubscriptions = null
+    @configSubscriptions = null if @configSubscriptions
 
   # Private: Returns left offset of mouse curosr from a given mouse event.
   leftOffsetFromMouseEvent: (e) ->
@@ -56,7 +59,7 @@ class MultiWrapGuideView extends View
     charWidth = @editorElement.getDefaultCharacterWidth()
     while targetLeft > left + (charWidth / 2)
       left += charWidth
-      column++
+      column += 1
     column
 
   # Private: Returns the column at the given page x position in piexls.
@@ -85,6 +88,20 @@ class MultiWrapGuideView extends View
     else
       @empty()
 
+  # Private: Disables guides for this editor.
+  disable: ->
+    @enabled = false
+    @showGuides()
+    return unless @doAutoSave()
+    atom.config.set 'multi-wrap-guide.enabled', @enabled, scopeSelector: @getRootScopeSelector()
+
+  # Private: Enables guides for this editor.
+  enable: ->
+    @enabled = true
+    @showGuides()
+    return unless @doAutoSave()
+    atom.config.set 'multi-wrap-guide.enabled', @enabled, scopeSelector: @getRootScopeSelector()
+
   # Private: Sets up wrap guide event and command handlers.
   handleEvents: ->
     showGuidesCallback = => @showGuides()
@@ -105,40 +122,37 @@ class MultiWrapGuideView extends View
       @attach()
       showGuidesCallback()
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:create-guide': =>
-        @createGuide @currentCursorColumn
-        @showGuides()
-        @saveColumns()
+      'multi-wrap-guide:create-guide': => @createGuide @currentCursorColumn
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:remove-guide': =>
-        @removeGuide @currentCursorColumn
-        @showGuides()
-        @saveColumns()
+      'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorColumn
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:toggle': => @toggle()
+    @subscriptions.add atom.commands.add 'atom-text-editor',
+      'multi-wrap-guide:disable': => @disable()
+    @subscriptions.add atom.commands.add 'atom-text-editor',
+      'multi-wrap-guide:enable': => @enable()
     @subscriptions.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:lock': => @lock()
     @subscriptions.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:unlock': => @unlock()
+    @emitter.on 'did-change-guides', (data) =>
+      return if atom.workspace.getActiveTextEditor() is @editor
+      {columns, scope} = data
+      return unless "#{@editor.getRootScopeDescriptor()}" is "#{scope}"
+      @columns = columns
+      @showGuides()
 
   # Private: Sets up wrap guide configuration change event handlers.
   handleConfigEvents: ->
     updateGuidesCallback = => @updateGuides()
     subscriptions = new CompositeDisposable
-    subscriptions.add atom.config.onDidChange(
-      'editor.preferredLineLength',
-      scope: @editor.getRootScopeDescriptor(),
-      updateGuidesCallback)
-    subscriptions.add atom.config.onDidChange(
-      'wrap-guide.enabled',
-      scope: @editor.getRootScopeDescriptor(),
-      updateGuidesCallback)
-    subscriptions.add atom.config.onDidChange(
-      'multi-wrap-guide.enabled',
-      updateGuidesCallback)
-    subscriptions.add atom.config.onDidChange(
-      'multi-wrap-guide.columns',
-      updateGuidesCallback)
+    scope = @editor.getRootScopeDescriptor()
+    subscribe = (key, callback) ->
+      subscriptions.add atom.config.onDidChange key, scope: scope, callback
+    subscribe 'editor.preferredLineLength', updateGuidesCallback
+    subscribe 'wrap-guide.enabled', updateGuidesCallback
+    subscribe 'multi-wrap-guide.enabled', updateGuidesCallback
+    subscribe 'multi-wrap-guide.columns', updateGuidesCallback
     subscriptions.add atom.config.onDidChange 'multi-wrap-guide.locked', (locked) =>
       if locked.newValue
         @lock()
@@ -146,22 +160,11 @@ class MultiWrapGuideView extends View
         @unlock()
     subscriptions
 
-  # Private: Gets default wrap guide column from config.
-  getDefaultColumns: (scopeName) ->
-    [atom.config.get 'editor.preferredLineLength', scope: [scopeName]]
-
-  # Private: Sets column widths based on current config.
-  updateColumns: (path, scopeName) ->
-    customColumns = atom.config.get 'multi-wrap-guide.columns'
-    @columns = if customColumns.length > 0 then customColumns else @getDefaultColumns scopeName
-
   # Private: Returns true iff wrap guides and this package is enabled.
   isEnabled: ->
-    wrap_enabled = atom.config.get 'wrap-guide.enabled',
-      scope: @editor.getRootScopeDescriptor()
-    if wrap_enabled? and not wrap_enabled
-      return false
-    return atom.config.get 'multi-wrap-guide.enabled'
+    wrapGuideEnabled = atom.config.get 'wrap-guide.enabled', scope: @editor.getRootScopeDescriptor()
+    return false if wrapGuideEnabled? and wrapGuideEnabled
+    return @enabled
 
   # Private: Creates a new JQuery DOM element with given type and classes.
   createElement: (type, classes...) ->
@@ -174,21 +177,34 @@ class MultiWrapGuideView extends View
   createGuide: (column) ->
     return unless atom.workspace.getActiveTextEditor() is @editor
     i = @columns.indexOf(column)
-    if i == -1
+    if i is -1
       @columns.push column
+    @saveColumns()
+    @showGuides()
+    @didChangeGuides()
+
+  # Private: Emits did-change-guides signal.
+  didChangeGuides: ->
+    @emitter.emit 'did-change-guides',
+      columns: @columns
+      scope: @editor.getRootScopeDescriptor()
 
   # Private: Removes the guide at the given column, if one exists.
   removeGuide: (column) ->
+    return unless atom.workspace.getActiveTextEditor() is @editor
     i = @columns.indexOf(column)
     if i > -1
       @columns.splice(i, 1)
+    @saveColumns()
+    @showGuides()
+    @didChangeGuides()
 
   # Private: Locks guides so they can't be dragged.
   lock: ->
     for guide in @children()
       guide.classList.remove 'draggable'
     @locked = true
-    return unless atom.workspace.getActiveTextEditor() is @editor
+    return unless @doAutoSave()
     atom.config.set 'multi-wrap-guide.locked', @locked
 
   # Private: Unlocks guides so they can be dragged.
@@ -196,7 +212,7 @@ class MultiWrapGuideView extends View
     for guide in @children()
       guide.classList.add 'draggable'
     @locked = false
-    return unless atom.workspace.getActiveTextEditor() is @editor
+    return unless @doAutoSave()
     atom.config.set 'multi-wrap-guide.locked', @locked
 
   # Private: Mouse down event handler, initiates guide dragging.
@@ -222,8 +238,20 @@ class MultiWrapGuideView extends View
   mouseUp: (e) =>
     guide = $(e.data[0])
     @dragEnd guide
+    @columns = (parseInt(tip.textContent) for tip in @find 'div.multi-wrap-guide-tip')
     @saveColumns()
-    @showGuides()
+    @didChangeGuides()
+
+  # Private: Saves current columns to config if auto save enabled.
+  saveColumns: ->
+    @columns = $.unique(@columns.sort (a, b) -> a - b)
+    scope = @editor.getRootScopeDescriptor()
+    scopeSelector = @getRootScopeSelector()
+    if @doAutoSave()
+      if @columns.length is 1
+        atom.config.set 'editor.preferredLineLength', @columns[0], scopeSelector: scopeSelector
+      else
+        atom.config.set 'multi-wrap-guide.columns', @columns, scopeSelector: scopeSelector
 
   # Private: Mouse leave event handler, cancels guide dragging.
   mouseLeave: (e) =>
@@ -257,23 +285,24 @@ class MultiWrapGuideView extends View
   setTipColumn: (guide, column) ->
     guide.find('div.multi-wrap-guide-tip').text column
 
-  # Private: Saves current column state, also saves to config if auto save is enabled.
-  saveColumns: ->
-    @columns = (parseInt(tip.textContent) for tip in @find 'div.multi-wrap-guide-tip')
-    @columns = $.unique(@columns.sort (a, b) -> a - b)
-    return unless atom.config.get 'multi-wrap-guide.autoSaveChanges'
-    customColumns = atom.config.get 'multi-wrap-guide.columns'
-    if customColumns.length > 0
-      atom.config.set 'multi-wrap-guide.columns', @columns
-    else
-      scope = atom.workspace.getActiveTextEditor()?.getGrammar()?.scopeName
-      return unless scope?
-      atom.config.set 'editor.preferredLineLength', @columns[0],
-        scopeSelector: ".#{scope}"
+  # Private: Returns a `scopeSelector` for `atom.config.set()`; compare to
+  # `editor.getRootScopeDescriptor()` that returns a `scope` descriptor for `atom.config.get()`.
+  getRootScopeSelector: ->
+    ".#{@editor.getGrammar().scopeName}"
+
+  # Private: Returns true iff autosave should occur.
+  doAutoSave: ->
+    scope = @editor.getRootScopeDescriptor()
+    return false unless atom.config.get 'multi-wrap-guide.autoSaveChanges', scope: scope
+    return false unless atom.workspace.getActiveTextEditor() is @editor
+    true
 
   # Private: Updates guides from config and shows them.
   updateGuides: ->
-    @updateColumns @editor.getPath(), @editor.getGrammar().scopeName
+    scope = @editor.getRootScopeDescriptor()
+    defaultColumns = [atom.config.get 'editor.preferredLineLength', scope: scope]
+    customColumns = atom.config.get 'multi-wrap-guide.columns', scope: scope
+    @columns = if customColumns.length > 0 then customColumns else defaultColumns
     @showGuides()
 
   # Private: Redraws current guides.
