@@ -6,6 +6,7 @@ SubAtom = require 'sub-atom'
 module.exports =
 class MultiWrapGuideView extends View
   columns: []                 # Current column widths.
+  contextMenu: null           # Disposable object of current context menu.
   currentCursorColumn: null   # Current mouse position in column width.
   editor: null                # Attached editor.
   editorElement: null         # Attached editor element.
@@ -31,6 +32,9 @@ class MultiWrapGuideView extends View
     @attach()
     @handleEvents()
     @updateGuides()
+    # Using setTimeout to avoid race condition with insertion of context menus
+    # otherwise context menu can jump around when recreated
+    setTimeout (=> @updateMenus()), 0
     this
 
   # Public: Destroys all wrap guides.
@@ -42,6 +46,61 @@ class MultiWrapGuideView extends View
     @subs = null if @subs
     @configSubscriptions?.dispose()
     @configSubscriptions = null if @configSubscriptions
+    @contextMenu?.dispose()
+    @contextMenu = null if @contextMenu
+
+  updateContextMenu: ->
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    @contextMenu?.dispose()
+    @contextMenu = null if @contextMenu
+    submenu = [
+      { label: 'Create Guide', command: 'multi-wrap-guide:create-guide' }
+      { label: 'Remove Guide', command: 'multi-wrap-guide:remove-guide' }
+      { type: 'separator' }
+    ]
+    if @locked
+      submenu.push { label: '🔓Unlock Guides', command: 'multi-wrap-guide:toggle-lock' }
+    else
+      submenu.push { label: '🔒Lock Guides', command: 'multi-wrap-guide:toggle-lock' }
+    submenu.push { type: 'separator' }
+    submenu.push { label: 'Toggle Guides', command: 'multi-wrap-guide:toggle' }
+    submenu.push { label: 'Disable Guides', command: 'multi-wrap-guide:disable' }
+    submenu.push { label: 'Enable Guides', command: 'multi-wrap-guide:enable' }
+    @contextMenu = atom.contextMenu.add
+      'atom-text-editor': [
+        label: 'Multi Wrap Guide'
+        submenu: submenu
+      ]
+
+  # Private: Updates package menu and context menus dynamically.
+  updateMenus: ->
+    # TODO: Make this work from any editor, ie: settings page?
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    @updateContextMenu()
+
+    packages = null
+    for item in atom.menu.template
+      if item.label is 'Packages'
+        packages = item
+        break
+    return unless packages
+
+    ourMenu = null
+    for item in packages.submenu
+      if item.label is 'Multi Wrap Guide'
+        ourMenu = item
+        break
+    return unless ourMenu
+
+    locker = null
+    for item in ourMenu.submenu
+      if item.command is 'multi-wrap-guide:toggle-lock'
+        locker = item
+        break
+    return unless locker
+
+    locker.label = if @locked then '🔓Unlock Guides' else '🔒Lock Guides'
+    atom.menu.update()
 
   # Private: Returns left offset of mouse curosr from a given mouse event.
   leftOffsetFromMouseEvent: (e) ->
@@ -125,21 +184,27 @@ class MultiWrapGuideView extends View
       'multi-wrap-guide:create-guide': => @createGuide @currentCursorColumn
     @subscriptions.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorColumn
+
+    # TODO: refactor these to be more like toggle-lock
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:disable': => @disable()
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:enable': => @enable()
-    @subscriptions.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:lock': => @lock()
-    @subscriptions.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:unlock': => @unlock()
+
     @emitter.on 'did-change-guides', (data) =>
       return if atom.workspace.getActiveTextEditor() is @editor
       {columns, scope} = data
       return unless "#{@editor.getRootScopeDescriptor()}" is "#{scope}"
       @columns = columns
+      @showGuides()
+
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'multi-wrap-guide:toggle-lock': => @toggleLock()
+    @emitter.on 'did-toggle-lock', (locked) =>
+      return if atom.workspace.getActiveTextEditor() is @editor
+      @locked = locked
       @showGuides()
 
   # Private: Sets up wrap guide configuration change event handlers.
@@ -153,11 +218,6 @@ class MultiWrapGuideView extends View
     subscribe 'wrap-guide.enabled', updateGuidesCallback
     subscribe 'multi-wrap-guide.enabled', updateGuidesCallback
     subscribe 'multi-wrap-guide.columns', updateGuidesCallback
-    subscriptions.add atom.config.onDidChange 'multi-wrap-guide.locked', (locked) =>
-      if locked.newValue
-        @lock()
-      else
-        @unlock()
     subscriptions
 
   # Private: Returns true iff wrap guides and this package is enabled.
@@ -204,6 +264,7 @@ class MultiWrapGuideView extends View
     for guide in @children()
       guide.classList.remove 'draggable'
     @locked = true
+    @updateMenus()
     return unless @doAutoSave()
     atom.config.set 'multi-wrap-guide.locked', @locked
 
@@ -212,8 +273,18 @@ class MultiWrapGuideView extends View
     for guide in @children()
       guide.classList.add 'draggable'
     @locked = false
+    @updateMenus()
     return unless @doAutoSave()
     atom.config.set 'multi-wrap-guide.locked', @locked
+
+  # Private: Toggles guides lock for dragging.
+  toggleLock: ->
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    if @locked
+      @unlock()
+    else
+      @lock()
+    @emitter.emit 'did-toggle-lock', @locked
 
   # Private: Mouse down event handler, initiates guide dragging.
   mouseDown: (e) =>

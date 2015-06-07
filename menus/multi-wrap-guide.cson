@@ -1,34 +1,13 @@
-'context-menu':
-  'atom-text-editor': [
-    {
-      'label': 'Multi Wrap Guide'
-      'submenu': [
-        { 'label': 'Create Guide', 'command': 'multi-wrap-guide:create-guide' }
-        { 'label': 'Remove Guide', 'command': 'multi-wrap-guide:remove-guide' }
-        { 'type': 'separator'}
-        { 'label': '🔒Lock Guides', 'command': 'multi-wrap-guide:lock' }
-        { 'label': '🔓Unlock Guides', 'command': 'multi-wrap-guide:unlock'}
-        { 'type': 'separator'}
-        { 'label': 'Toggle Guides', 'command': 'multi-wrap-guide:toggle' }
-        { 'label': 'Disable Guides', 'command': 'multi-wrap-guide:disable' }
-        { 'label': 'Enable Guides', 'command': 'multi-wrap-guide:enable' }
-      ]
-    }
-  ]
-
 'menu': [
-    {
-      'label': 'Packages'
-      'submenu': [
-        'label': 'Multi Wrap Guide'
-        'submenu': [
-          { 'label': '🔒Lock Guides', 'command': 'multi-wrap-guide:lock' }
-          { 'label': '🔓Unlock Guides', 'command': 'multi-wrap-guide:unlock' }
-          { 'type': 'separator'}
-          { 'label': 'Toggle Guides', 'command': 'multi-wrap-guide:toggle' }
-          { 'label': 'Disable Guides', 'command': 'multi-wrap-guide:disable' }
-          { 'label': 'Enable Guides', 'command': 'multi-wrap-guide:enable' }
-        ]
+    label: 'Packages'
+    submenu: [
+      label: 'Multi Wrap Guide'
+      submenu: [
+        { label: '', command: 'multi-wrap-guide:toggle-lock' }
+        { type: 'separator' }
+        { label: 'Toggle Guides', command: 'multi-wrap-guide:toggle' }
+        { label: 'Disable Guides', command: 'multi-wrap-guide:disable' }
+        { label: 'Enable Guides', command: 'multi-wrap-guide:enable' }
       ]
-    }
+    ]
   ]
