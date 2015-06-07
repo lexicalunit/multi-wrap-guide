@@ -85,7 +85,10 @@ atom-text-editor::shadow {
 ## Future Work
 
 - Create some spec tests!
+- Make lock/unlock work from all views, not just `atom-text-editor`.
 - Add continuous integration (blocked by creation of spec tests).
+- Refactor enable/disable to be like lock/unlock.
+- Get rid of toggle? Rename it to "temporary show/hide"?
 - Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
 - Styling options for guides in settings?
