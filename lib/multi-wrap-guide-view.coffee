@@ -14,7 +14,6 @@ class MultiWrapGuideView extends View
   enabled: true               # True iff guide lines are enabled.
   linesView: null             # Attached lines view.
   locked: false               # True iff guide lines are locked.
-  scrollElement: null         # Attached scroll element.
   subs: null                  # SubAtom object.
   visible: true               # True iff guide lines are currently visible.
 
@@ -27,19 +26,18 @@ class MultiWrapGuideView extends View
     scope = @editor.getRootScopeDescriptor()
     @locked = atom.config.get 'multi-wrap-guide.locked'
     @editorElement = atom.views.getView editor
-    @scrollElement = @editorElement.rootElement.querySelector 'div.scroll-view'
-    @linesView = $(@editorElement.rootElement.querySelector 'div.lines')
     @attach()
     @handleEvents()
-    @updateGuides()
-    # Using setTimeout to avoid race condition with insertion of context menus
-    # otherwise context menu can jump around when recreated
+    @columns = @getColumns()
+    @attach()
+    @showGuides()
+    # setTimeout avoids race condition for insertion of context menus
     setTimeout (=> @updateMenus()), 0
     this
 
   # Public: Destroys all wrap guides.
   destroy: ->
-    @linesView.find('div.multi-wrap-guide').empty().remove()
+    @linesView.find('div.multi-wrap-guide-view').empty().remove()
     @subscriptions?.dispose()
     @subscriptions = null if @subscriptions
     @subs?.dispose()
@@ -78,6 +76,7 @@ class MultiWrapGuideView extends View
     return unless atom.workspace.getActiveTextEditor() is @editor
     @updateContextMenu()
 
+    # TODO: make these loops work as functions? For some reason it didn't work.
     packages = null
     for item in atom.menu.template
       if item.label is 'Packages'
@@ -111,8 +110,7 @@ class MultiWrapGuideView extends View
 
   # Private: Returns column number of mouse cursor from a given mouse event.
   columnFromMouseEvent: (e) ->
-    targetLeft = @leftOffsetFromMouseEvent e
-    targetLeft += @editor.getScrollLeft() if @editorElement.hasTiledRendering
+    targetLeft = @leftOffsetFromMouseEvent(e) + @editor.getScrollLeft()
     left = 0
     column = 0
     charWidth = @editorElement.getDefaultCharacterWidth()
@@ -123,7 +121,7 @@ class MultiWrapGuideView extends View
 
   # Private: Returns the column at the given page x position in piexls.
   columnFromPostiionX: (x) ->
-    x += @editor.getScrollLeft() if @editorElement.hasTiledRendering
+    x += @editor.getScrollLeft()
     charWidth = @editorElement.getDefaultCharacterWidth()
     leftSide = (x // charWidth) * charWidth
     rightSide = (x // charWidth + 1) * charWidth
@@ -135,9 +133,8 @@ class MultiWrapGuideView extends View
 
   # Private: Attach wrap guides to editor.
   attach: ->
-    @linesView?.append this
-    @subs.add @editorElement, 'mousemove', (e) =>
-      @currentCursorColumn = @columnFromMouseEvent e
+    @linesView = $(@editorElement.rootElement.querySelector 'div.lines')
+    @linesView.append this
 
   # Private: Toggles wrap guides on and off.
   toggle: ->
@@ -163,35 +160,40 @@ class MultiWrapGuideView extends View
 
   # Private: Sets up wrap guide event and command handlers.
   handleEvents: ->
-    showGuidesCallback = => @showGuides()
     @subscriptions = new CompositeDisposable
     @configSubscriptions = @handleConfigEvents()
+
+    showGuidesCallback = => @showGuides()
     @subscriptions.add atom.config.onDidChange 'editor.fontSize', ->
-      # setTimeout because we need to wait for the editor measurement to happen
+      # setTimeout() to wait for @editorElement.getDefaultCharacterWidth() measurement to happen
       setTimeout showGuidesCallback, 0
-    @subscriptions.add @editor.onDidChangeScrollLeft showGuidesCallback
-    @subscriptions.add @editor.onDidChangePath showGuidesCallback
+    @subscriptions.add @editor.onDidChangeScrollLeft -> showGuidesCallback()
+    @subscriptions.add @editor.onDidChangePath -> showGuidesCallback()
+    @subscriptions.add @editorElement.onDidAttach =>
+      @attach()  # TODO: Do we *always* need to attach() here, or only sometimes?
+      showGuidesCallback()
     @subscriptions.add @editor.onDidChangeGrammar =>
       @configSubscriptions.dispose()
       @configSubscriptions = @handleConfigEvents()
+      @columns = @getColumns()
       showGuidesCallback()
-    @subscriptions.add @editor.onDidDestroy =>
-      @destroy()
-    @subscriptions.add @editorElement.onDidAttach =>
-      @attach()
-      showGuidesCallback()
-    @subscriptions.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:create-guide': => @createGuide @currentCursorColumn
-    @subscriptions.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorColumn
 
-    # TODO: refactor these to be more like toggle-lock
+    @subs.add @editorElement, 'mousemove', (e) =>
+      @currentCursorColumn = @columnFromMouseEvent e
+
+    # TODO: refactor toggle/enable/disable to be more like toggle-lock
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:disable': => @disable()
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'multi-wrap-guide:enable': => @enable()
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'multi-wrap-guide:create-guide': => @createGuide @currentCursorColumn
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorColumn
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'multi-wrap-guide:toggle-lock': => @toggleLock()
 
     @emitter.on 'did-change-guides', (data) =>
       return if atom.workspace.getActiveTextEditor() is @editor
@@ -199,9 +201,6 @@ class MultiWrapGuideView extends View
       return unless "#{@editor.getRootScopeDescriptor()}" is "#{scope}"
       @columns = columns
       @showGuides()
-
-    @subscriptions.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:toggle-lock': => @toggleLock()
     @emitter.on 'did-toggle-lock', (locked) =>
       return if atom.workspace.getActiveTextEditor() is @editor
       @locked = locked
@@ -209,7 +208,9 @@ class MultiWrapGuideView extends View
 
   # Private: Sets up wrap guide configuration change event handlers.
   handleConfigEvents: ->
-    updateGuidesCallback = => @updateGuides()
+    updateGuidesCallback = =>
+      @columns = @getColumns()
+      @showGuides()
     subscriptions = new CompositeDisposable
     scope = @editor.getRootScopeDescriptor()
     subscribe = (key, callback) ->
@@ -222,7 +223,8 @@ class MultiWrapGuideView extends View
 
   # Private: Returns true iff wrap guides and this package is enabled.
   isEnabled: ->
-    wrapGuideEnabled = atom.config.get 'wrap-guide.enabled', scope: @editor.getRootScopeDescriptor()
+    wrapGuideEnabled = atom.config.get 'wrap-guide.enabled',
+      scope: @editor.getRootScopeDescriptor()
     return false if wrapGuideEnabled? and wrapGuideEnabled
     return @enabled
 
@@ -340,8 +342,7 @@ class MultiWrapGuideView extends View
   # Private: Sets the current column location of the given guide.
   # Pre-condition: The tip element must be appended to the guide.
   setColumn: (guide, column) ->
-    columnWidth = @editorElement.getDefaultCharacterWidth() * column
-    columnWidth -= @editor.getScrollLeft() if @editorElement.hasTiledRendering
+    columnWidth = (@editorElement.getDefaultCharacterWidth() * column) - @editor.getScrollLeft()
     guide.css 'left', "#{columnWidth}px"
     @setTipColumn guide, column
 
@@ -368,16 +369,16 @@ class MultiWrapGuideView extends View
     return false unless atom.workspace.getActiveTextEditor() is @editor
     true
 
-  # Private: Updates guides from config and shows them.
-  updateGuides: ->
+  # Private: Gets current columns configuration value.
+  getColumns: ->
     scope = @editor.getRootScopeDescriptor()
     defaultColumns = [atom.config.get 'editor.preferredLineLength', scope: scope]
     customColumns = atom.config.get 'multi-wrap-guide.columns', scope: scope
-    @columns = if customColumns.length > 0 then customColumns else defaultColumns
-    @showGuides()
+    if customColumns.length > 0 then customColumns else defaultColumns
 
   # Private: Redraws current guides.
   showGuides: =>
+    return unless @editorElement.getDefaultCharacterWidth()
     @empty()
     return unless @isEnabled()
     for column in @columns
