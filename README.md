@@ -1,5 +1,7 @@
 # Multi Wrap Guide
 
+[![Build Status](https://travis-ci.org/lexicalunit/multi-wrap-guide.svg?branch=master)](https://travis-ci.org/lexicalunit/multi-wrap-guide) [![Dependency Status](https://david-dm.org/lexicalunit/multi-wrap-guide.svg)](https://david-dm.org/lexicalunit/multi-wrap-guide) [![Build status](https://ci.appveyor.com/api/projects/status/4l7udbh1b6tolp7k/branch/master?svg=true)](https://ci.appveyor.com/project/lexicalunit/multi-wrap-guide/branch/master)
+
 Fully customizable wrap guides at multiple column positions.
 
 **Multiple wrap guides**
@@ -84,9 +86,8 @@ atom-text-editor::shadow {
 
 ## Future Work
 
-- Create some spec tests!
+- More spec test coverage.
 - Make lock/unlock work from all views, not just `atom-text-editor`.
-- Add continuous integration (blocked by creation of spec tests).
 - Refactor enable/disable to be like lock/unlock.
 - Update screenshots to be more recent.
 - Get rid of toggle? Rename it to "temporary show/hide"?
