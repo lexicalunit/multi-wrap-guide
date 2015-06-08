@@ -173,12 +173,14 @@ class MultiWrapGuideView extends View
       columns: @columns
       scope: @editor.getRootScopeDescriptor()
 
-  # Private: Removes the guide at the given column, if one exists.
+  # Private: Removes the guide at or near the given column, if one exists.
   removeGuide: (column) ->
     return unless atom.workspace.getActiveTextEditor() is @editor
-    i = @columns.indexOf(column)
-    if i > -1
-      @columns.splice(i, 1)
+    for i in [column, column - 1, column + 1, column - 2, column + 2]
+      index = @columns.indexOf(i)
+      if index > -1
+        @columns.splice(index, 1)
+        break
     @saveColumns()
     @showGuides()
     @didChangeGuides()
@@ -227,11 +229,8 @@ class MultiWrapGuideView extends View
     @columns = $.unique(@columns.sort (a, b) -> a - b)
     scope = @editor.getRootScopeDescriptor()
     scopeSelector = @getRootScopeSelector()
-    if @doAutoSave()
-      if @columns.length is 1
-        atom.config.set 'editor.preferredLineLength', @columns[0], scopeSelector: scopeSelector
-      else
-        atom.config.set 'multi-wrap-guide.columns', @columns, scopeSelector: scopeSelector
+    return unless @doAutoSave()
+    atom.config.set 'multi-wrap-guide.columns', @columns, scopeSelector: scopeSelector
 
   # Private: Mouse leave event handler, cancels guide dragging.
   mouseLeave: (e) =>
