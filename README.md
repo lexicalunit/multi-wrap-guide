@@ -6,19 +6,17 @@ Fully customizable wrap guides at multiple column positions.
 
 **Multiple wrap guides**
 
-![guides](https://cloud.githubusercontent.com/assets/1903876/8000958/76513892-0b26-11e5-80ab-aa630ccf0635.png)
+![guides](https://cloud.githubusercontent.com/assets/1903876/8047184/b1fc4a9c-0e07-11e5-943f-ebffd647c2e0.png)
 
 **Draggable wrap guides**
 
-![preview](https://cloud.githubusercontent.com/assets/1903876/7998617/65c03c2a-0b04-11e5-8417-f3f992d1d818.gif)
+![drag](https://cloud.githubusercontent.com/assets/1903876/8047183/b1f95c24-0e07-11e5-9c53-d2e1ba4cd273.gif)
 
-> Easily disable draggable guides by using the `Multi Wrap Guide: Lock Guides` command. This is especially useful when draggable guides are interfering with text selection.
+> Easily disable draggable guides by using the `Multi Wrap Guide: Toggle Lock` command. This is especially useful when draggable guides are interfering with text selection.
 
 **Create and remove guides easily**
 
-![before](https://cloud.githubusercontent.com/assets/1903876/8016975/f1a2fab4-0bb0-11e5-9933-365cfe59ea26.png)
-![context](https://cloud.githubusercontent.com/assets/1903876/8016976/f1a58c20-0bb0-11e5-8f58-5cdfdcebfd50.png)
-![after](https://cloud.githubusercontent.com/assets/1903876/8016977/f1a75c6c-0bb0-11e5-9675-7f15bc80038d.png)
+![create](https://cloud.githubusercontent.com/assets/1903876/8047182/b1f6e340-0e07-11e5-8db5-99add2af6646.gif)
 
 ## Configuration
 
@@ -63,31 +61,34 @@ atom-text-editor::shadow {
 }
 ```
 
-Or if you want to get really fancy, you can set a different color for each column:
+Or if you want to get really fancy, you can set different colors and widths for each column:
 
 ```less
 atom-text-editor::shadow {
   .multi-wrap-guide:nth-child(1) .multi-wrap-guide-line {
-    background-color: fadeout(white, 70%);
+    background-color: fadeout(white, 60%);
+    width: 1px;
   }
   .multi-wrap-guide:nth-child(2) .multi-wrap-guide-line {
-    background-color: fadeout(green, 70%);
+    background-color: fadeout(green, 60%);
+    width: 2px;
   }
   .multi-wrap-guide:nth-child(3) .multi-wrap-guide-line {
-    background-color: fadeout(yellow, 70%);
+    background-color: fadeout(yellow, 60%);
+    width: 5px;
   }
   .multi-wrap-guide:nth-child(4) .multi-wrap-guide-line {
-    background-color: fadeout(red, 70%);
+    background-color: fadeout(red, 60%);
+    width: 10px;
   }
 }
 ```
 
-![colors](https://cloud.githubusercontent.com/assets/1903876/8016897/a62f5808-0baf-11e5-9101-0e86638308e7.png)
+![colors](https://cloud.githubusercontent.com/assets/1903876/8047181/b1ef283a-0e07-11e5-92b9-5c9afbebf29c.png)
 
 ## Future Work
 
 - More spec test coverage.
-- Update screenshots to be more recent.
 - Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
 - Styling options for guides in settings?
