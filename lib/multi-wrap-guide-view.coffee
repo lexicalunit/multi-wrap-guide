@@ -21,7 +21,7 @@ class MultiWrapGuideView extends View
     @div class: 'multi-wrap-guide-view'
 
   # Public: Creates new wrap guide view for given editor.
-  initialize: (@editor, @emitter) ->
+  initialize: (@editor, @emitter, @views) ->
     @subs = new SubAtom
     scope = @editor.getRootScopeDescriptor()
     @locked = atom.config.get 'multi-wrap-guide.locked'
@@ -47,8 +47,13 @@ class MultiWrapGuideView extends View
     @contextMenu?.dispose()
     @contextMenu = null if @contextMenu
 
+  # Private: Returns true for only the one of the existing MultiWrapGuide objects.
+  isMasterView: ->
+    masterId = parseInt(Object.keys(@views).sort((a, b) -> a - b)[0])
+    @editor.id is masterId
+
   updateContextMenu: ->
-    return unless atom.workspace.getActiveTextEditor() is @editor
+    return unless @isMasterView()
     @contextMenu?.dispose()
     @contextMenu = null if @contextMenu
     submenu = [
@@ -72,8 +77,7 @@ class MultiWrapGuideView extends View
 
   # Private: Updates package menu and context menus dynamically.
   updateMenus: ->
-    # TODO: Make this work from any editor, ie: settings page?
-    return unless atom.workspace.getActiveTextEditor() is @editor
+    return unless @isMasterView()
     @updateContextMenu()
 
     # TODO: make these loops work as functions? For some reason it didn't work.
@@ -202,7 +206,6 @@ class MultiWrapGuideView extends View
       @columns = columns
       @showGuides()
     @emitter.on 'did-toggle-lock', (locked) =>
-      return if atom.workspace.getActiveTextEditor() is @editor
       @locked = locked
       @showGuides()
 
@@ -281,7 +284,7 @@ class MultiWrapGuideView extends View
 
   # Private: Toggles guides lock for dragging.
   toggleLock: ->
-    return unless atom.workspace.getActiveTextEditor() is @editor
+    return unless @isMasterView()
     if @locked
       @unlock()
     else
@@ -366,7 +369,7 @@ class MultiWrapGuideView extends View
   doAutoSave: ->
     scope = @editor.getRootScopeDescriptor()
     return false unless atom.config.get 'multi-wrap-guide.autoSaveChanges', scope: scope
-    return false unless atom.workspace.getActiveTextEditor() is @editor
+    return false unless @isMasterView()
     true
 
   # Private: Gets current columns configuration value.

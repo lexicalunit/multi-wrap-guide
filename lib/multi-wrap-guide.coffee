@@ -25,7 +25,7 @@ module.exports =
     @subscriptions = new CompositeDisposable
     @views = {}
     atom.workspace.observeTextEditors (editor) =>
-      @views[editor.id] = new MultiWrapGuideView editor, @emitter
+      @views[editor.id] = new MultiWrapGuideView editor, @emitter, @views
       @subscriptions.add editor.onDidDestroy =>
         @views[editor.id].destroy()
         delete @views[editor.id]

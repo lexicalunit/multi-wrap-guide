@@ -87,7 +87,6 @@ atom-text-editor::shadow {
 ## Future Work
 
 - More spec test coverage.
-- Make lock/unlock work from all views, not just `atom-text-editor`.
 - Refactor enable/disable to be like lock/unlock.
 - Update screenshots to be more recent.
 - Get rid of toggle? Rename it to "temporary show/hide"?
