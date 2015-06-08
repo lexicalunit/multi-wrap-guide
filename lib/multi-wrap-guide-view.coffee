@@ -261,6 +261,7 @@ class MultiWrapGuideView extends View
   # Private: Sets the tip text to be the given column.
   # Pre-condition: The tip element must be appended to the guide.
   setTipColumn: (guide, column) ->
+    guide.prop 'title', column
     guide.find('div.multi-wrap-guide-tip').text column
 
   # Private: Returns a `scopeSelector` for `atom.config.set()`; compare to
