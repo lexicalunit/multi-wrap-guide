@@ -26,6 +26,11 @@ module.exports =
   subs: null                  # SubAtom object.
   views: {}                   # Hash of MultiWrapGuideView objects by editor.id.
 
+  labelUnlockGuides: '🔓Unlock Guides'
+  labelLockGuides: '🔒Lock Guides'
+  labelDisableGuides: '❌Disable Guides'
+  labelEnableGuides: '✅Enable Guides'
+
   # Public: Activates package.
   activate: ->
     @subs = new SubAtom
@@ -97,13 +102,13 @@ module.exports =
       { type: 'separator' }
     ]
     if @locked
-      submenu.push { label: '🔓Unlock Guides', command: 'multi-wrap-guide:toggle-lock' }
+      submenu.push { label: @labelUnlockGuides, command: 'multi-wrap-guide:toggle-lock' }
     else
-      submenu.push { label: '🔒Lock Guides', command: 'multi-wrap-guide:toggle-lock' }
+      submenu.push { label: @labelLockGuides, command: 'multi-wrap-guide:toggle-lock' }
     if @enabled
-      submenu.push { label: 'Disable Guides', command: 'multi-wrap-guide:toggle' }
+      submenu.push { label: @labelDisableGuides, command: 'multi-wrap-guide:toggle' }
     else
-      submenu.push { label: 'Enable Guides', command: 'multi-wrap-guide:toggle' }
+      submenu.push { label: @labelEnableGuides, command: 'multi-wrap-guide:toggle' }
     @contextMenu = atom.contextMenu.add
       'atom-text-editor': [
         label: 'Multi Wrap Guide'
@@ -135,7 +140,7 @@ module.exports =
         locker = item
         break
     if locker
-      locker.label = if @locked then '🔓Unlock Guides' else '🔒Lock Guides'
+      locker.label = if @locked then @labelUnlockGuides else @labelLockGuides
 
     toggler = null
     for item in ourMenu.submenu
@@ -143,6 +148,6 @@ module.exports =
         toggler = item
         break
     if toggler
-      toggler.label = if @enabled then 'Disable Guides' else 'Enable Guides'
+      toggler.label = if @enabled then @labelDisableGuides else @labelEnableGuides
 
     atom.menu.update()
