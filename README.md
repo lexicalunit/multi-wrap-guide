@@ -87,9 +87,7 @@ atom-text-editor::shadow {
 ## Future Work
 
 - More spec test coverage.
-- Refactor enable/disable to be like lock/unlock.
 - Update screenshots to be more recent.
-- Get rid of toggle? Rename it to "temporary show/hide"?
 - Make guides draggable only at the top, to avoid conflict with selection?
 - Better way to capture mouse?
 - Styling options for guides in settings?

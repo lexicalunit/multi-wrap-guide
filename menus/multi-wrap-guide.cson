@@ -4,10 +4,7 @@
       label: 'Multi Wrap Guide'
       submenu: [
         { label: '', command: 'multi-wrap-guide:toggle-lock' }
-        { type: 'separator' }
-        { label: 'Toggle Guides', command: 'multi-wrap-guide:toggle' }
-        { label: 'Disable Guides', command: 'multi-wrap-guide:disable' }
-        { label: 'Enable Guides', command: 'multi-wrap-guide:enable' }
+        { label: '', command: 'multi-wrap-guide:toggle' }
       ]
     ]
   ]
