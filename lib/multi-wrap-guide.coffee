@@ -40,7 +40,7 @@ module.exports =
     @disableDefaultWrapGuidePackage()
     @handleEvents()
     atom.workspace.observeTextEditors (editor) =>
-      @views[editor.id] = new MultiWrapGuideView editor, @emitter, @views
+      @views[editor.id] = new MultiWrapGuideView editor, @emitter
       @subs.add editor.onDidDestroy =>
         @views[editor.id].destroy()
         delete @views[editor.id]
@@ -83,7 +83,6 @@ module.exports =
 
   # Private: Disables default wrap-guide package that comes with Atom.
   disableDefaultWrapGuidePackage: ->
-    # TODO: re-enable if multi-wrap-guide is disabled?
     wrapGuide = atom.packages.getLoadedPackage('wrap-guide')
     wrapGuide?.deactivate()
     wrapGuide?.disable()
@@ -119,35 +118,23 @@ module.exports =
   updateMenus: ->
     @updateContextMenu()
 
-    # TODO: make these loops work as functions? For some reason it didn't work.
-    packages = null
-    for item in atom.menu.template
-      if item.label is 'Packages'
-        packages = item
-        break
-    return unless packages
+    grab = (obj, attr, val) ->
+      for item in obj
+        if obj[attr] is val
+          return item
 
-    ourMenu = null
-    for item in packages.submenu
-      if item.label is 'Multi Wrap Guide'
-        ourMenu = item
-        break
-    return unless ourMenu
+    packages = grab atom.menu.template, 'label', 'Packages'
+    return unless packages?
 
-    locker = null
-    for item in ourMenu.submenu
-      if item.command is 'multi-wrap-guide:toggle-lock'
-        locker = item
-        break
-    if locker
+    ourMenu = grab packages.submenu, 'label', 'Multi Wrap Guide'
+    return unless ourMenu?
+
+    locker = grab ourMenu.submenu, 'command', 'multi-wrap-guide:toggle-lock'
+    if locker?
       locker.label = if @locked then @labelUnlockGuides else @labelLockGuides
 
-    toggler = null
-    for item in ourMenu.submenu
-      if item.command is 'multi-wrap-guide:toggle'
-        toggler = item
-        break
-    if toggler
+    toggler = grab ourMenu.submenu, 'command', 'multi-wrap-guide:toggle'
+    if toggler?
       toggler.label = if @enabled then @labelDisableGuides else @labelEnableGuides
 
     atom.menu.update()

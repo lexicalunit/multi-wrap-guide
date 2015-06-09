@@ -20,7 +20,7 @@ class MultiWrapGuideView extends View
     @div class: 'multi-wrap-guide-view'
 
   # Public: Creates new wrap guide view for given editor.
-  initialize: (@editor, @emitter, @views) ->
+  initialize: (@editor, @emitter) ->
     @subs = new SubAtom
     @locked = atom.config.get 'multi-wrap-guide.locked'
     @enabled = atom.config.get 'multi-wrap-guide.enabled'
@@ -38,11 +38,6 @@ class MultiWrapGuideView extends View
     @subs = null if @subs
     @configSubs?.dispose()
     @configSubs = null if @configSubs
-
-  # Private: Returns true for only the one of the existing MultiWrapGuide objects.
-  isMasterView: ->
-    masterId = parseInt(Object.keys(@views).sort((a, b) -> a - b)[0])
-    @editor.id is masterId
 
   # Private: Returns left offset of mouse curosr from a given mouse event.
   leftOffsetFromMouseEvent: (e) ->
@@ -113,7 +108,7 @@ class MultiWrapGuideView extends View
     @subs.add @editor.onDidChangeScrollLeft -> showGuidesCallback()
     @subs.add @editor.onDidChangePath -> showGuidesCallback()
     @subs.add @editorElement.onDidAttach =>
-      @attach()  # TODO: Do we *always* need to attach() here, or only sometimes?
+      @attach()
       showGuidesCallback()
     @subs.add @editor.onDidChangeGrammar =>
       @configSubs.dispose()
