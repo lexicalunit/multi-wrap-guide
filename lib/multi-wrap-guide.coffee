@@ -18,6 +18,11 @@ module.exports =
     locked:
       type: 'boolean'
       default: false
+    rows:
+      default: []
+      type: 'array'
+      items:
+        type: 'integer'
 
   contextMenu: null           # Disposable object of current context menu.
   emitter: null               # Emitter object.
@@ -26,10 +31,13 @@ module.exports =
   subs: null                  # SubAtom object.
   views: {}                   # Hash of MultiWrapGuideView objects by editor.id.
 
-  labelUnlockGuides: '🔓Unlock Guides'
-  labelLockGuides: '🔒Lock Guides'
-  labelDisableGuides: '❌Disable Guides'
-  labelEnableGuides: '✅Enable Guides'
+  labelUnlockGuides: '🔓 Unlock Guides'
+  labelLockGuides: '🔒 Lock Guides'
+  labelDisableGuides: '❌ Disable Guides'
+  labelEnableGuides: '✅ Enable Guides'
+  labelCreateVerticalGuide: '⇣ Create Vertical Guide'
+  labelCreateHorizontalGuide: '⇢ Create Horizontal Guide'
+  labelRemoveGuide: 'Remove Guide'
 
   # Public: Activates package.
   activate: ->
@@ -96,8 +104,10 @@ module.exports =
     @contextMenu?.dispose()
     @contextMenu = null if @contextMenu
     submenu = [
-      { label: 'Create Guide', command: 'multi-wrap-guide:create-guide' }
-      { label: 'Remove Guide', command: 'multi-wrap-guide:remove-guide' }
+      { label: @labelCreateVerticalGuide, command: 'multi-wrap-guide:create-vertical-guide' }
+      { label: @labelCreateHorizontalGuide, command: 'multi-wrap-guide:create-horizontal-guide' }
+      { type: 'separator' }
+      { label: @labelRemoveGuide, command: 'multi-wrap-guide:remove-guide' }
       { type: 'separator' }
     ]
     if @locked
@@ -120,7 +130,7 @@ module.exports =
 
     grab = (obj, attr, val) ->
       for item in obj
-        if obj[attr] is val
+        if item[attr] is val
           return item
 
     packages = grab atom.menu.template, 'label', 'Packages'
