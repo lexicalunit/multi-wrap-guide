@@ -58,7 +58,7 @@ class MultiWrapGuideView extends View
     column
 
   # Private: Returns the column at the given page x position in piexls.
-  columnFromPostiionX: (x) ->
+  columnFromPositionX: (x) ->
     x += @editor.getScrollLeft()
     charWidth = @editorElement.getDefaultCharacterWidth()
     leftSide = (x // charWidth) * charWidth
@@ -250,7 +250,7 @@ class MultiWrapGuideView extends View
   # Private: Sets the tip text based on the guide's current position.
   # Pre-condition: The tip element must be appended to the guide.
   setTip: (guide) ->
-    column = @columnFromPostiionX parseInt(guide.css 'left')
+    column = @columnFromPositionX parseInt(guide.css 'left')
     @setTipColumn guide, column
 
   # Private: Sets the tip text to be the given column.
