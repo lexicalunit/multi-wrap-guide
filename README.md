@@ -1,6 +1,6 @@
 # Multi Wrap Guide
 
-[![Build Status](https://travis-ci.org/lexicalunit/multi-wrap-guide.svg?branch=master)](https://travis-ci.org/lexicalunit/multi-wrap-guide) [![Dependency Status](https://david-dm.org/lexicalunit/multi-wrap-guide.svg)](https://david-dm.org/lexicalunit/multi-wrap-guide) [![Build status](https://ci.appveyor.com/api/projects/status/4l7udbh1b6tolp7k/branch/master?svg=true)](https://ci.appveyor.com/project/lexicalunit/multi-wrap-guide/branch/master)
+[![Build Status](https://travis-ci.org/lexicalunit/multi-wrap-guide.svg?branch=master)](https://travis-ci.org/lexicalunit/multi-wrap-guide) [![Dependency Status](https://david-dm.org/lexicalunit/multi-wrap-guide.svg)](https://david-dm.org/lexicalunit/multi-wrap-guide)
 
 Fully customizable wrap guides at multiple column positions.
 
@@ -93,6 +93,7 @@ atom-text-editor::shadow {
 - Better way to capture mouse?
 - Styling options for guides in settings?
 - Improve any performance issues?
+- Appveyor/Windows CI (Blocked by [atom/ci@12](https://github.com/atom/ci/pull/12)).
 
 ## Notice
 
