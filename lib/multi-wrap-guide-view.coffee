@@ -218,6 +218,7 @@ class MultiWrapGuideView extends View
     @columns = (parseInt(tip.textContent) for tip in @find 'div.multi-wrap-guide-tip')
     @saveColumns()
     @didChangeGuides()
+    @showGuides()
 
   # Private: Saves current columns to config if auto save enabled.
   saveColumns: ->
