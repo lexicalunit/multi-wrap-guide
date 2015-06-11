@@ -120,7 +120,7 @@ module.exports =
 
     grab = (obj, attr, val) ->
       for item in obj
-        if obj[attr] is val
+        if item[attr] is val
           return item
 
     packages = grab atom.menu.template, 'label', 'Packages'
