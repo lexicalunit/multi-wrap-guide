@@ -89,10 +89,7 @@ atom-text-editor::shadow {
 ## Future Work
 
 - More spec test coverage.
-- Make guides draggable only at the top, to avoid conflict with selection?
-- Better way to capture mouse?
-- Styling options for guides in settings?
-- Improve any performance issues?
+- Up-to-date screenshots.
 - Appveyor/Windows CI (Blocked by [atom/ci@12](https://github.com/atom/ci/pull/12)).
 
 ## Notice
