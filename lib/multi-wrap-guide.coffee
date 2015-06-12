@@ -1,7 +1,3 @@
-{Emitter} = require 'atom'
-SubAtom = require 'sub-atom'
-MultiWrapGuideView = require './multi-wrap-guide-view'
-
 module.exports =
   config:
     autoSaveChanges:
@@ -41,8 +37,12 @@ module.exports =
 
   # Public: Activates package.
   activate: ->
-    @subs = new SubAtom
+    # performance optimization: require only after activation
+    {Emitter} = require 'atom'
+    SubAtom = require 'sub-atom'
+    MultiWrapGuideView = require './multi-wrap-guide-view'
     @emitter = new Emitter
+    @subs = new SubAtom
     @locked = atom.config.get 'multi-wrap-guide.locked'
     @enabled = atom.config.get 'multi-wrap-guide.enabled'
     @disableDefaultWrapGuidePackage()
@@ -67,27 +67,29 @@ module.exports =
       view.destroy()
     @views = {}
 
-  # Private: Handle did-toggle-lock event.
-  onDidToggleLock: ->
-    @locked = not @locked
-    @updateMenus()
-    return unless @doAutoSave()
-    atom.config.set 'multi-wrap-guide.locked', @locked
+  # Public: Trigger callback on did-toggle-lock events.
+  onDidToggleLock: (fn) ->
+    @emitter.on 'did-toggle-lock', fn
 
-  # Private: Handle did-toggle events.
-  onDidToggle: ->
-    @enabled = not @enabled
-    @updateMenus()
-    return unless @doAutoSave()
-    atom.config.set 'multi-wrap-guide.enabled', @enabled
+  # Public: Trigger callback on did-toggle events.
+  onDidToggle: (fn) ->
+    @emitter.on 'did-toggle', fn
 
   # Private: Setup event handlers.
   handleEvents: ->
     @subs.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:toggle-lock': => @emitter.emit 'did-toggle-lock'
       'multi-wrap-guide:toggle': => @emitter.emit 'did-toggle'
-    @emitter.on 'did-toggle-lock', => @onDidToggleLock()
-    @emitter.on 'did-toggle', => @onDidToggle()
+    @onDidToggleLock =>
+      @locked = not @locked
+      @updateMenus()
+      return unless @doAutoSave()
+      atom.config.set 'multi-wrap-guide.locked', @locked
+    @onDidToggle =>
+      @enabled = not @enabled
+      @updateMenus()
+      return unless @doAutoSave()
+      atom.config.set 'multi-wrap-guide.enabled', @enabled
 
   # Private: Disables default wrap-guide package that comes with Atom.
   disableDefaultWrapGuidePackage: ->

@@ -74,27 +74,6 @@ class MultiWrapGuideView extends View
     @linesView = $(@editorElement.rootElement.querySelector 'div.lines')
     @linesView.append this
 
-  # Private: Handles did-toggle events.
-  onDidToggle: ->
-    @enabled = not @enabled
-    @redraw()
-
-  # Private: Handles did-toggle-lock events.
-  onDidToggleLock: ->
-    @locked = not @locked
-    if @locked
-      @lock()
-    else
-      @unlock()
-    @redraw()
-
-  # Private: Handles did-change-guides events.
-  onDidChangeGuides: (rows, columns, scope) ->
-    # guide columns are specific to grammars, so only update for the current scope
-    return unless "#{@editor.getRootScopeDescriptor()}" is "#{scope}"
-    [@rows, @columns] = [rows, columns]
-    @redraw()
-
   # Private: Sets up wrap guide event and command handlers.
   handleEvents: ->
     @configSubs = @handleConfigEvents()
@@ -129,11 +108,22 @@ class MultiWrapGuideView extends View
     @subs.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorRow, @currentCursorColumn
 
-    @emitter.on 'did-toggle-lock', => @onDidToggleLock()
-    @emitter.on 'did-toggle', => @onDidToggle()
+    @emitter.on 'did-toggle-lock', =>
+      @locked = not @locked
+      if @locked
+        @lock()
+      else
+        @unlock()
+      @redraw()
+    @emitter.on 'did-toggle', =>
+      @enabled = not @enabled
+      @redraw()
     @emitter.on 'did-change-guides', (data) =>
       {rows: rows, columns: columns, scope: scope} = data
-      @onDidChangeGuides rows, columns, scope
+      # guide columns are specific to grammars, so only update for the current scope
+      return unless "#{@editor.getRootScopeDescriptor()}" is "#{scope}"
+      [@rows, @columns] = [rows, columns]
+      @redraw()
 
   # Private: Sets up wrap guide configuration change event handlers.
   handleConfigEvents: ->
