@@ -2,11 +2,67 @@
 @import "ui-variables";
 
 atom-text-editor::shadow {
+  @grab-height: 1em;
   @grab-width: 1em;
+  @drag-height: 100%;
   @drag-width: 100%;
   @drag-color: fadein(@syntax-wrap-guide-color, 80%);
 
-  .multi-wrap-guide {
+  .horizontal .multi-wrap-guide {
+    display: block;
+    margin-top: -(@grab-height / 2);
+    position: absolute;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    height: @grab-height;
+
+    .multi-wrap-guide-line {
+      position: relative;
+      width: 100%;
+      z-index: 100;
+      margin-top: @grab-height / 2;
+      margin-bottom: @grab-height / 2;
+      height: 1px;
+      background-color: @syntax-wrap-guide-color;
+
+      .multi-wrap-guide-tip {
+        position: absolute;
+        top: 1px;
+        left: 0;
+        display: none;
+        overflow-y: visible;
+        z-index: 110;
+        padding: 6px 2px;
+        border: 0;
+        background-color: @drag-color;
+        color: black;
+        font-size: large;
+      }
+    }
+
+    &.draggable:hover {
+      cursor: row-resize;
+    }
+
+    &.drag:hover {
+      margin-top: -(@drag-height / 2);
+      height: @drag-height;
+      z-index: 110;
+
+      .multi-wrap-guide-line {
+        margin-top: @drag-height / 2;
+        margin-bottom: @drag-height / 2;
+        background-color: @drag-color;
+
+        .multi-wrap-guide-tip {
+          display: inline;
+        }
+      }
+    }
+  }
+
+  .vertical .multi-wrap-guide {
     display: block;
     margin-left: -(@grab-width / 2);
     position: absolute;

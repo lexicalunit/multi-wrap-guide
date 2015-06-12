@@ -4,15 +4,17 @@ SubAtom = require 'sub-atom'
 
 module.exports =
 class MultiWrapGuideView extends View
-  columns: []                 # Current column widths.
+  columns: []                 # Current column positions.
   configSubs: null            # SubAtom object for config event handlers.
-  currentCursorColumn: null   # Current mouse position in column width.
+  currentCursorColumn: null   # Current mouse position in column position.
+  currentCursorRow: null      # Current mouse position in row position.
   editor: null                # Attached editor.
   editorElement: null         # Attached editor element.
   emitter: null               # Package emitter object.
   enabled: true               # True iff guide lines are enabled.
   linesView: null             # Attached lines view.
   locked: false               # True iff guide lines are locked.
+  rows: []                    # Current row positions.
   subs: null                  # SubAtom object for general event handlers.
   visible: true               # True iff guide lines are currently visible.
 
@@ -28,7 +30,8 @@ class MultiWrapGuideView extends View
     @attach()
     @handleEvents()
     @columns = @getColumns()
-    @showGuides()
+    @rows = @getRows()
+    @redraw()
     this
 
   # Public: Destroys all wrap guides.
@@ -39,35 +42,32 @@ class MultiWrapGuideView extends View
     @configSubs?.dispose()
     @configSubs = null if @configSubs
 
-  # Private: Returns left offset of mouse curosr from a given mouse event.
-  leftOffsetFromMouseEvent: (e) ->
-    {clientX} = event
+  # Private: Returns [left, top] offsets of mouse curosr from a given mouse event.
+  offsetFromMouseEvent: (e) ->
+    {clientX, clientY} = event
     linesClientRect = @linesView[0].getBoundingClientRect()
-    targetLeft = clientX - linesClientRect.left
-    targetLeft
+    left = clientX - linesClientRect.left
+    top = clientY - linesClientRect.top
+    [left, top]
 
-  # Private: Returns column number of mouse cursor from a given mouse event.
-  columnFromMouseEvent: (e) ->
-    targetLeft = @leftOffsetFromMouseEvent(e) + @editor.getScrollLeft()
+  # Private: Returns [column, row] numbers of mouse cursor from a given mouse event.
+  positionFromMouseEvent: (e) ->
+    [offsetLeft, offsetTop] = @offsetFromMouseEvent(e)
+    targetLeft = offsetLeft + @editor.getScrollLeft()
+    targetTop = offsetTop + @editor.getScrollTop()
     left = 0
     column = 0
     charWidth = @editorElement.getDefaultCharacterWidth()
     while targetLeft > left + (charWidth / 2)
       left += charWidth
       column += 1
-    column
-
-  # Private: Returns the column at the given page x position in piexls.
-  columnFromPositionX: (x) ->
-    x += @editor.getScrollLeft()
-    charWidth = @editorElement.getDefaultCharacterWidth()
-    leftSide = (x // charWidth) * charWidth
-    rightSide = (x // charWidth + 1) * charWidth
-    if Math.abs(x - leftSide) < Math.abs(x - rightSide)
-      column = leftSide // charWidth
-    else
-      column = rightSide // charWidth
-    column
+    top = 0
+    row = 0
+    lineHeight = @editor.getLineHeightInPixels()
+    while targetTop > top + (lineHeight / 2)
+      top += lineHeight
+      row += 1
+    [column, row]
 
   # Private: Attach wrap guides to editor.
   attach: ->
@@ -77,7 +77,7 @@ class MultiWrapGuideView extends View
   # Private: Handles did-toggle events.
   onDidToggle: ->
     @enabled = not @enabled
-    @showGuides()
+    @redraw()
 
   # Private: Handles did-toggle-lock events.
   onDidToggleLock: ->
@@ -86,61 +86,67 @@ class MultiWrapGuideView extends View
       @lock()
     else
       @unlock()
-    @showGuides()
+    @redraw()
 
   # Private: Handles did-change-guides events.
-  onDidChangeGuides: (columns, scope) ->
-    # active editor initiated create/remove, so only inactive editors need updating
-    return if atom.workspace.getActiveTextEditor() is @editor
+  onDidChangeGuides: (rows, columns, scope) ->
     # guide columns are specific to grammars, so only update for the current scope
     return unless "#{@editor.getRootScopeDescriptor()}" is "#{scope}"
-    @columns = columns
-    @showGuides()
+    [@rows, @columns] = [rows, columns]
+    @redraw()
 
   # Private: Sets up wrap guide event and command handlers.
   handleEvents: ->
     @configSubs = @handleConfigEvents()
 
-    showGuidesCallback = => @showGuides()
+    showCallback = =>
+      @redraw()
     @subs.add atom.config.onDidChange 'editor.fontSize', ->
       # setTimeout() to wait for @editorElement.getDefaultCharacterWidth() measurement to happen
-      setTimeout showGuidesCallback, 0
-    @subs.add @editor.onDidChangeScrollLeft -> showGuidesCallback()
-    @subs.add @editor.onDidChangePath -> showGuidesCallback()
+      setTimeout showCallback, 0
+    @subs.add @editor.onDidChangeScrollLeft -> showCallback()
+    @subs.add @editor.onDidChangeScrollTop -> showCallback()
+    @subs.add @editor.onDidChangePath -> showCallback()
     @subs.add @editorElement.onDidAttach =>
       @attach()
-      showGuidesCallback()
+      showCallback()
     @subs.add @editor.onDidChangeGrammar =>
       @configSubs.dispose()
       @configSubs = @handleConfigEvents()
       @columns = @getColumns()
-      showGuidesCallback()
+      @rows = @getColumns()
+      showCallback()
 
     @subs.add @editorElement, 'mousemove', (e) =>
-      @currentCursorColumn = @columnFromMouseEvent e
+      [col, row] = @positionFromMouseEvent e
+      @currentCursorColumn = col
+      @currentCursorRow = row
 
     @subs.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:create-guide': => @createGuide @currentCursorColumn
+      'multi-wrap-guide:create-vertical-guide': => @createVerticalGuide @currentCursorColumn
     @subs.add atom.commands.add 'atom-workspace',
-      'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorColumn
+      'multi-wrap-guide:create-horizontal-guide': => @createHorizontalGuide @currentCursorRow
+    @subs.add atom.commands.add 'atom-workspace',
+      'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorRow, @currentCursorColumn
 
     @emitter.on 'did-toggle-lock', => @onDidToggleLock()
     @emitter.on 'did-toggle', => @onDidToggle()
     @emitter.on 'did-change-guides', (data) =>
-      {columns, scope} = data
-      @onDidChangeGuides columns, scope
+      {rows: rows, columns: columns, scope: scope} = data
+      @onDidChangeGuides rows, columns, scope
 
   # Private: Sets up wrap guide configuration change event handlers.
   handleConfigEvents: ->
     updateGuidesCallback = =>
-      @columns = @getColumns()
-      @showGuides()
+      [@rows, @columns] = [@getRows(), @getColumns()]
+      @redraw()
     subs = new SubAtom
     scope = @editor.getRootScopeDescriptor()
     scopedSubscribe = (key, callback) ->
       subs.add atom.config.onDidChange key, scope: scope, callback
     scopedSubscribe 'editor.preferredLineLength', updateGuidesCallback
     scopedSubscribe 'multi-wrap-guide.columns', updateGuidesCallback
+    scopedSubscribe 'multi-wrap-guide.rows', updateGuidesCallback
     subs.add atom.config.onDidChange 'multi-wrap-guide.locked', updateGuidesCallback
     subs.add atom.config.onDidChange 'multi-wrap-guide.enabled', updateGuidesCallback
     subs
@@ -152,33 +158,58 @@ class MultiWrapGuideView extends View
       element.addClass c
     element
 
-  # Private: Adds a new guide the given column, if one doesn't already exist.
-  createGuide: (column) ->
-    return unless atom.workspace.getActiveTextEditor() is @editor
-    i = @columns.indexOf(column)
+  # Private: Adds given position to list of positions.
+  addPosition: (pos, list) ->
+    rvalue = list.slice(0)
+    i = list.indexOf(pos)
     if i is -1
-      @columns.push column
-    @saveColumns()
-    @showGuides()
+      rvalue.push pos
+    rvalue
+
+  # Private: Adds a new guide at the given column, if one doesn't already exist.
+  createVerticalGuide: (column) ->
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    @setColumns(@addPosition column, @columns)
+    @didChangeGuides()
+
+  # Private: Adds a new horizontal guide at the given row, if one doesn't already exist.
+  createHorizontalGuide: (row) ->
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    @setRows(@addPosition row, @rows)
     @didChangeGuides()
 
   # Private: Emits did-change-guides signal.
   didChangeGuides: ->
     @emitter.emit 'did-change-guides',
+      rows: @rows
       columns: @columns
       scope: @editor.getRootScopeDescriptor()
 
-  # Private: Removes the guide at or near the given column, if one exists.
-  removeGuide: (column) ->
-    return unless atom.workspace.getActiveTextEditor() is @editor
-    for i in [column, column - 1, column + 1, column - 2, column + 2]
-      index = @columns.indexOf(i)
+  # Private: Removes a value from the list of positions, if one exists, near given position.
+  removeNearPosition: (pos, list) ->
+    removed = false
+    rvalue = list.slice(0)
+    for i in [pos, pos - 1, pos + 1, pos - 2, pos + 2]
+      index = list.indexOf(i)
       if index > -1
-        @columns.splice(index, 1)
+        rvalue.splice(index, 1)
+        removed = true
         break
-    @saveColumns()
-    @showGuides()
-    @didChangeGuides()
+    [removed, rvalue]
+
+  # Private: Removes the guide at or near the given row or column, if one exists.
+  removeGuide: (row, column) ->
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    [removed, update] = @removeNearPosition column, @columns
+    if removed
+      @setColumns update
+      @didChangeGuides()
+      return
+    [removed, update] = @removeNearPosition row, @rows
+    if removed
+      @setRows update
+      @didChangeGuides()
+      return
 
   # Private: Locks guides so they can't be dragged.
   lock: ->
@@ -193,72 +224,84 @@ class MultiWrapGuideView extends View
       guide.classList.add 'draggable'
 
   # Private: Mouse down event handler, initiates guide dragging.
-  mouseDown: (e) =>
+  mouseDownGuide: (e) =>
     return if @locked
     return if e.button
     guide = $(e.data[0])
     guide.addClass 'drag'
-    guide.mouseup guide, @mouseUp
-    guide.mousemove guide, @mouseMove
-    guide.mouseleave guide, @mouseLeave
+    guide.mouseup guide, @mouseUpGuide
+    guide.mousemove guide, @mouseMoveGuide
+    guide.mouseleave guide, @mouseLeaveGuide
     false
 
   # Private: Mouse move event handler, updates position and tip text.
-  mouseMove: (e) =>
+  mouseMoveGuide: (e) =>
     guide = $(e.data[0])
-    targetLeft = @leftOffsetFromMouseEvent e
-    guide.css 'left', "#{targetLeft}px"
-    @setTip guide
+    [offsetLeft, offsetTop] = @offsetFromMouseEvent e
+    if guide.parent().hasClass 'horizontal'
+      targetTop = offsetTop
+      guide.css 'top', "#{targetTop}px"
+      p = parseInt(guide.css 'top') + @editor.getScrollTop()
+      width = @editor.getLineHeightInPixels()
+    else
+      targetLeft = offsetLeft
+      guide.css 'left', "#{targetLeft}px"
+      p = parseInt(guide.css 'left') + @editor.getScrollLeft()
+      width = @editorElement.getDefaultCharacterWidth()
+    prev = (p // width) * width
+    next = (p // width + 1) * width
+    if Math.abs(p - prev) < Math.abs(p - next)
+      position = prev // width
+    else
+      position = next // width
+    guide.prop 'title', position
+    guide.find('div.multi-wrap-guide-tip').text position
     false
 
   # Private: Mouse up event handler, drops guide at selected column.
-  mouseUp: (e) =>
+  mouseUpGuide: (e) =>
     guide = $(e.data[0])
-    @dragEnd guide
-    @columns = (parseInt(tip.textContent) for tip in @find 'div.multi-wrap-guide-tip')
-    @saveColumns()
+    @dragEndGuide guide
+    direction = if guide.parent().hasClass 'horizontal' then 'horizontal' else 'vertical'
+    query = "div.#{direction} div.multi-wrap-guide-tip"
+    positions = (parseInt(tip.textContent) for tip in @find query)
+    if direction is 'horizontal'
+      @setRows positions
+    else
+      @setColumns positions
     @didChangeGuides()
-    @showGuides()
+    @redraw()
 
-  # Private: Saves current columns to config if auto save enabled.
-  saveColumns: ->
-    @columns = $.unique(@columns.sort (a, b) -> a - b)
-    scope = @editor.getRootScopeDescriptor()
+  # Private: Returns a uniquely sorted list of numbers.
+  uniqueSort: (l) ->
+    $.unique(l.sort (a, b) -> a - b)
+
+  # Private: Sets current columns and saves to config if auto save enabled.
+  setColumns: (columns) ->
+    @columns = @uniqueSort columns
     scopeSelector = @getRootScopeSelector()
     return unless @doAutoSave()
     atom.config.set 'multi-wrap-guide.columns', @columns, scopeSelector: scopeSelector
 
+  # Private: Sets current rows and saves to config if auto save enabled.
+  setRows: (rows) ->
+    @rows = @uniqueSort rows
+    scopeSelector = @getRootScopeSelector()
+    return unless @doAutoSave()
+    atom.config.set 'multi-wrap-guide.rows', @rows, scopeSelector: scopeSelector
+
   # Private: Mouse leave event handler, cancels guide dragging.
-  mouseLeave: (e) =>
+  mouseLeaveGuide: (e) =>
     guide = $(e.data[0])
-    @dragEnd guide
-    @showGuides()
+    @dragEndGuide guide
+    @redraw()
 
   # Private: Ends guide dragging for the given guide.
-  dragEnd: (guide) ->
+  dragEndGuide: (guide) ->
     guide.unbind 'mouseleave'
     guide.unbind 'mousemove'
     guide.unbind 'up'
     guide.removeClass 'drag'
-
-  # Private: Sets the current column location of the given guide.
-  # Pre-condition: The tip element must be appended to the guide.
-  setColumn: (guide, column) ->
-    columnWidth = (@editorElement.getDefaultCharacterWidth() * column) - @editor.getScrollLeft()
-    guide.css 'left', "#{columnWidth}px"
-    @setTipColumn guide, column
-
-  # Private: Sets the tip text based on the guide's current position.
-  # Pre-condition: The tip element must be appended to the guide.
-  setTip: (guide) ->
-    column = @columnFromPositionX parseInt(guide.css 'left')
-    @setTipColumn guide, column
-
-  # Private: Sets the tip text to be the given column.
-  # Pre-condition: The tip element must be appended to the guide.
-  setTipColumn: (guide, column) ->
-    guide.prop 'title', column
-    guide.find('div.multi-wrap-guide-tip').text column
 
   # Private: Returns a `scopeSelector` for `atom.config.set()`; compare to
   # `editor.getRootScopeDescriptor()` that returns a `scope` descriptor for `atom.config.get()`.
@@ -276,18 +319,48 @@ class MultiWrapGuideView extends View
     customColumns = atom.config.get 'multi-wrap-guide.columns', scope: scope
     if customColumns.length > 0 then customColumns else defaultColumns
 
-  # Private: Redraws current guides.
-  showGuides: =>
+  # Private: Gets current rows configuration value.
+  getRows: ->
+    scope = @editor.getRootScopeDescriptor()
+    defaultRows = []
+    customRows = atom.config.get 'multi-wrap-guide.rows', scope: scope
+    if customRows.length > 0 then customRows else defaultRows
+
+  # Private: Creates and appends all guides to view.
+  appendGuides: (positions, horizontal) ->
+    lineHeight = @editor.getLineHeightInPixels()
+    charWidth = @editorElement.getDefaultCharacterWidth()
+    scrollTop = @editor.getScrollTop()
+    scrollLeft = @editor.getScrollLeft()
+    group = @createElement 'div', 'multi-wrap-guide-group'
+    if horizontal
+      group.addClass 'horizontal'
+    else
+      group.addClass 'vertical'
+    for position in positions
+      if group.hasClass 'horizontal'
+        # don't draw very distant horizontal guides
+        continue if @editor.getLineCount() + 2 * @editor.getRowsPerPage() < position
+      tip = @createElement 'div', 'multi-wrap-guide-tip'
+      tip.text position
+      line = @createElement 'div', 'multi-wrap-guide-line'
+      line.append tip
+      guide = @createElement 'div', 'multi-wrap-guide'
+      guide.addClass 'draggable' unless @locked
+      guide.prop 'title', position
+      guide.mousedown guide, @mouseDownGuide
+      guide.append line
+      if group.hasClass 'horizontal'
+        guide.css 'top', "#{(lineHeight * position) - scrollTop}px"
+      else
+        guide.css 'left', "#{(charWidth * position) - scrollLeft}px"
+      group.append guide
+    @append group
+
+  # Private: Redraws all current guides.
+  redraw: =>
     return unless @editorElement.getDefaultCharacterWidth()
     @empty()
     return unless @enabled
-    for column in @columns
-      guide = @createElement 'div', 'multi-wrap-guide'
-      guide.addClass 'draggable' unless @locked
-      tip = @createElement 'div', 'multi-wrap-guide-tip'
-      line = @createElement 'div', 'multi-wrap-guide-line'
-      line.append tip
-      guide.append line
-      guide.mousedown guide, @mouseDown
-      @setColumn guide, column  # must be called after appending tip
-      @append guide
+    @appendGuides @columns, false
+    @appendGuides @rows, true

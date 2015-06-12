@@ -43,69 +43,81 @@ describe "MultiWrapGuide", ->
         expect(atom.workspace.getPanes().length).toBe 1
         views = getWrapGuideViews()
         expect(views.length).toBe 1
-        guide = views[0].firstChild
-        expect(getLeftPosition(views[0].firstChild)).toBeGreaterThan(0)
-
+        group = views[0].firstChild
+        expect(group).toExist()
+        guide = group.firstChild
+        expect(guide).toExist()
+        expect(getLeftPosition(guide)).toBeGreaterThan(0)
         atom.workspace.getActivePane().splitRight(copyActiveItem: true)
         expect(atom.workspace.getPanes().length).toBe 2
         views = getWrapGuideViews()
         expect(views.length).toBe 2
-        expect(getLeftPosition(views[0].firstChild)).toBeGreaterThan(0)
-        expect(getLeftPosition(views[1].firstChild)).toBeGreaterThan(0)
+        expect(getLeftPosition(views[0].firstChild.firstChild)).toBeGreaterThan(0)
+        expect(getLeftPosition(views[1].firstChild.firstChild)).toBeGreaterThan(0)
 
     it "positions the guide at the configured column", ->
       width = editor.getDefaultCharWidth() * MultiWrapGuide.views[editor.id].getColumns()[0]
       expect(width).toBeGreaterThan(0)
-      expect(getLeftPosition(wrapGuideView.firstChild)).toBe(width)
-      expect(wrapGuideView.firstChild).toBeVisible()
+      guide = wrapGuideView.firstChild.firstChild
+      expect(getLeftPosition(guide)).toBe(width)
+      expect(guide).toBeVisible()
 
   describe "when the font size changes", ->
     it "updates the wrap guide position", ->
-      initial = getLeftPosition(wrapGuideView.firstChild)
+      guide = wrapGuideView.firstChild.firstChild
+      initial = getLeftPosition(guide)
       expect(initial).toBeGreaterThan(0)
       fontSize = atom.config.get("editor.fontSize")
       atom.config.set("editor.fontSize", fontSize + 10)
 
       advanceClock(1)
-      expect(getLeftPosition(wrapGuideView.firstChild)).toBeGreaterThan(initial)
-      expect(wrapGuideView.firstChild).toBeVisible()
+      guide = wrapGuideView.firstChild.firstChild
+      expect(getLeftPosition(guide)).toBeGreaterThan(initial)
+      expect(guide).toBeVisible()
 
   describe "when the column config changes", ->
     it "updates the wrap guide position", ->
-      initial = getLeftPosition(wrapGuideView.firstChild)
+      guide = wrapGuideView.firstChild.firstChild
+      initial = getLeftPosition(guide)
       expect(initial).toBeGreaterThan(0)
       column = atom.config.get("editor.preferredLineLength")
       atom.config.set("editor.preferredLineLength", column + 10)
-      expect(getLeftPosition(wrapGuideView.firstChild)).toBeGreaterThan(initial)
-      expect(wrapGuideView.firstChild).toBeVisible()
+      guide = wrapGuideView.firstChild.firstChild
+      expect(getLeftPosition(guide)).toBeGreaterThan(initial)
+      expect(guide).toBeVisible()
 
       atom.config.set("editor.preferredLineLength", column - 10)
-      expect(getLeftPosition(wrapGuideView.firstChild)).toBeLessThan(initial)
-      expect(wrapGuideView.firstChild).toBeVisible()
+      guide = wrapGuideView.firstChild.firstChild
+      expect(getLeftPosition(guide)).toBeLessThan(initial)
+      expect(guide).toBeVisible()
 
   describe "when the editor's scroll left changes", ->
     it "updates the wrap guide position to a relative position on screen", ->
       editor.setText("a long line which causes the editor to scroll")
       editor.setWidth(100)
 
-      initial = getLeftPosition(wrapGuideView.firstChild)
+      guide = wrapGuideView.firstChild.firstChild
+      initial = getLeftPosition(guide)
       expect(initial).toBeGreaterThan(0)
 
       editor.setScrollLeft(10)
 
-      expect(getLeftPosition(wrapGuideView.firstChild)).toBe(initial - 10)
-      expect(wrapGuideView.firstChild).toBeVisible()
+      guide = wrapGuideView.firstChild.firstChild
+      expect(getLeftPosition(guide)).toBe(initial - 10)
+      expect(guide).toBeVisible()
 
   describe "when the editor's grammar changes", ->
     it "updates the wrap guide position", ->
       atom.config.set('editor.preferredLineLength', 20, scopeSelector: '.source.js')
-      initial = getLeftPosition(wrapGuideView.firstChild)
+      guide = wrapGuideView.firstChild.firstChild
+      initial = getLeftPosition(guide)
       expect(initial).toBeGreaterThan(0)
-      expect(wrapGuideView.firstChild).toBeVisible()
+      expect(guide).toBeVisible()
 
       editor.setGrammar(atom.grammars.grammarForScopeName('text.plain.null-grammar'))
-      expect(getLeftPosition(wrapGuideView.firstChild)).toBeGreaterThan(initial)
-      expect(wrapGuideView.firstChild).toBeVisible()
+      guide = wrapGuideView.firstChild.firstChild
+      expect(getLeftPosition(guide)).toBeGreaterThan(initial)
+      expect(guide).toBeVisible()
 
   describe 'scoped config', ->
     it '::getDefaultColumn returns the scope-specific column value', ->
