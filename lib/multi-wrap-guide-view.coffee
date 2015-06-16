@@ -78,23 +78,40 @@ class MultiWrapGuideView extends View
   handleEvents: ->
     @configSubs = @handleConfigEvents()
 
-    showCallback = =>
+    redrawCallback = =>
       @redraw()
     @subs.add atom.config.onDidChange 'editor.fontSize', ->
       # setTimeout() to wait for @editorElement.getDefaultCharacterWidth() measurement to happen
-      setTimeout showCallback, 0
-    @subs.add @editor.onDidChangeScrollLeft -> showCallback()
-    @subs.add @editor.onDidChangeScrollTop -> showCallback()
-    @subs.add @editor.onDidChangePath -> showCallback()
+      setTimeout redrawCallback, 0
+    @subs.add @editor.onDidChangeScrollLeft -> redrawCallback()
+    @subs.add @editor.onDidChangeScrollTop -> redrawCallback()
+    @subs.add @editor.onDidChangePath -> redrawCallback()
+    @subs.add @editor.onDidChangeSoftWrapped -> redrawCallback()
     @subs.add @editorElement.onDidAttach =>
       @attach()
-      showCallback()
+      redrawCallback()
     @subs.add @editor.onDidChangeGrammar =>
       @configSubs.dispose()
       @configSubs = @handleConfigEvents()
       @columns = @getColumns()
       @rows = @getColumns()
-      showCallback()
+      redrawCallback()
+
+    ## TODO: When code is folded/unfolded, we need to update horizontal guides.
+    ##
+    ## Possible events to trigger off of:
+    ##   - onDid[Add/Remove]Decoration: happens too often. Best possible solution?
+    ##   - onDidUpdateMarkers: happens way too often.
+    ##   - onDidChange w/ filter for events we care about: happens waaaaaay too often!
+    ##
+    ## Using any of these events requires debounce/threshold logic :(
+    ##
+    ## Workaround: Redraw only onDidChangeScrollTop.
+    ##
+    # handleUpdateMarkers = ->
+    #   redrawCallback()
+    # @subs.add @editor.onDidAddDecoration _.debounce(handleUpdateMarkers, 500)
+    # @subs.add @editor.onDidRemoveDecoration _.debounce(handleUpdateMarkers, 500)
 
     @subs.add @editorElement, 'mousemove', (e) =>
       [col, row] = @positionFromMouseEvent e
@@ -165,7 +182,7 @@ class MultiWrapGuideView extends View
   # Private: Adds a new horizontal guide at the given row, if one doesn't already exist.
   createHorizontalGuide: (row) ->
     return unless atom.workspace.getActiveTextEditor() is @editor
-    @setRows(@addPosition row, @rows)
+    @setRows(@addPosition @editor.bufferRowForScreenRow(row), @rows)
     @didChangeGuides()
 
   # Private: Emits did-change-guides signal.
@@ -195,7 +212,7 @@ class MultiWrapGuideView extends View
       @setColumns update
       @didChangeGuides()
       return
-    [removed, update] = @removeNearPosition row, @rows
+    [removed, update] = @removeNearPosition @editor.bufferRowForScreenRow(row), @rows
     if removed
       @setRows update
       @didChangeGuides()
@@ -228,22 +245,25 @@ class MultiWrapGuideView extends View
   mouseMoveGuide: (e) =>
     guide = $(e.data[0])
     [offsetLeft, offsetTop] = @offsetFromMouseEvent e
-    if guide.parent().hasClass 'horizontal'
+    isHorizontal = guide.parent().hasClass 'horizontal'
+    if isHorizontal
       targetTop = offsetTop
       guide.css 'top', "#{targetTop}px"
-      p = parseInt(guide.css 'top') + @editor.getScrollTop()
+      offset = parseInt(guide.css 'top') + @editor.getScrollTop()
       width = @editor.getLineHeightInPixels()
     else
       targetLeft = offsetLeft
       guide.css 'left', "#{targetLeft}px"
-      p = parseInt(guide.css 'left') + @editor.getScrollLeft()
+      offset = parseInt(guide.css 'left') + @editor.getScrollLeft()
       width = @editorElement.getDefaultCharacterWidth()
-    prev = (p // width) * width
-    next = (p // width + 1) * width
-    if Math.abs(p - prev) < Math.abs(p - next)
+    prev = (offset // width) * width
+    next = (offset // width + 1) * width
+    if Math.abs(offset - prev) < Math.abs(offset - next)
       position = prev // width
     else
       position = next // width
+    if isHorizontal
+      position = @editor.bufferRowForScreenRow(position)
     guide.prop 'title', position
     guide.find('div.multi-wrap-guide-tip').text position
     false
@@ -341,7 +361,9 @@ class MultiWrapGuideView extends View
       guide.mousedown guide, @mouseDownGuide
       guide.append line
       if group.hasClass 'horizontal'
-        guide.css 'top', "#{(lineHeight * position) - scrollTop}px"
+        row = @editor.screenRowForBufferRow(position)
+        row += 1 if @editor.isFoldedAtBufferRow(position)
+        guide.css 'top', "#{(lineHeight * row) - scrollTop}px"
       else
         guide.css 'left', "#{(charWidth * position) - scrollLeft}px"
       group.append guide

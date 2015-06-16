@@ -91,6 +91,7 @@ atom-text-editor::shadow {
 - More spec test coverage.
 - Up-to-date screenshots.
 - Appveyor/Windows CI (Blocked by [atom/ci@12](https://github.com/atom/ci/pull/12)).
+- When code is folded/unfolded, update horizontal guides (Blocked due to no good event to trigger off of).
 
 ## Notice
 
