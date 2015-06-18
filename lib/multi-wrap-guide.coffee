@@ -58,11 +58,11 @@ module.exports =
   # Public: Deactives Package.
   deactivate: ->
     @subs?.dispose()
-    @subs = null if @subs
+    @subs = null
     @emitter?.dispose()
-    @emitter = null if @emitter
+    @emitter = null
     @contextMenu?.dispose()
-    @contextMenu = null if @contextMenu
+    @contextMenu = null
     for id, view of @views
       view.destroy()
     @views = {}
@@ -104,7 +104,7 @@ module.exports =
   # Private: Updates context menu.
   updateContextMenu: ->
     @contextMenu?.dispose()
-    @contextMenu = null if @contextMenu
+    @contextMenu = null
     submenu = [
       { label: @labelCreateVerticalGuide, command: 'multi-wrap-guide:create-vertical-guide' }
       { label: @labelCreateHorizontalGuide, command: 'multi-wrap-guide:create-horizontal-guide' }

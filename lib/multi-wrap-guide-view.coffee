@@ -38,9 +38,9 @@ class MultiWrapGuideView extends View
   destroy: ->
     @linesView.find('div.multi-wrap-guide-view').empty().remove()
     @subs?.dispose()
-    @subs = null if @subs
+    @subs = null
     @configSubs?.dispose()
-    @configSubs = null if @configSubs
+    @configSubs = null
 
   # Private: Returns [left, top] offsets of mouse curosr from a given mouse event.
   offsetFromMouseEvent: (e) ->
