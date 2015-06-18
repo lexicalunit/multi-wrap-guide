@@ -94,7 +94,7 @@ class MultiWrapGuideView extends View
       @configSubs.dispose()
       @configSubs = @handleConfigEvents()
       @columns = @getColumns()
-      @rows = @getColumns()
+      @rows = @getRows()
       redrawCallback()
 
     ## TODO: When code is folded/unfolded, we need to update horizontal guides.
