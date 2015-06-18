@@ -292,6 +292,9 @@ class MultiWrapGuideView extends View
     scopeSelector = @getRootScopeSelector()
     return unless @doAutoSave()
     atom.config.set 'multi-wrap-guide.columns', @columns, scopeSelector: scopeSelector
+    n = @columns.length
+    if n > 0
+      atom.config.set 'editor.preferredLineLength', @columns[n - 1], scopeSelector: scopeSelector
 
   # Private: Sets current rows and saves to config if auto save enabled.
   setRows: (rows) ->
