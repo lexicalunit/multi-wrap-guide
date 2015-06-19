@@ -80,6 +80,8 @@ module.exports =
     @subs.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:toggle-lock': => @emitter.emit 'did-toggle-lock'
       'multi-wrap-guide:toggle': => @emitter.emit 'did-toggle'
+      'multi-wrap-guide:make-current-settings-the-default': => @emitter.emit 'make-default'
+      'multi-wrap-guide:save-current-settings': => @emitter.emit 'make-scope'
     @onDidToggleLock =>
       @locked = not @locked
       @updateMenus()

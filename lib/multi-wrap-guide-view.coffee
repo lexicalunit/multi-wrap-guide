@@ -141,6 +141,15 @@ class MultiWrapGuideView extends View
       return unless "#{@editor.getRootScopeDescriptor()}" is "#{scope}"
       [@rows, @columns] = [rows, columns]
       @redraw()
+    @emitter.on 'make-default', =>
+      return unless @editor is atom.workspace.getActiveTextEditor()
+      @saveColumns null
+      @saveRows null
+    @emitter.on 'make-scope', =>
+      return unless @editor is atom.workspace.getActiveTextEditor()
+      scopeSelector = @getRootScopeSelector()
+      @saveColumns scopeSelector
+      @saveRows scopeSelector
 
   # Private: Sets up wrap guide configuration change event handlers.
   handleConfigEvents: ->
@@ -286,22 +295,26 @@ class MultiWrapGuideView extends View
   uniqueSort: (l) ->
     $.unique(l.sort (a, b) -> a - b)
 
-  # Private: Sets current columns and saves to config if auto save enabled.
-  setColumns: (columns) ->
-    @columns = @uniqueSort columns
-    scopeSelector = @getRootScopeSelector()
-    return unless @doAutoSave()
+  # Private: Save current columns to atom config using given scope selector.
+  saveColumns: (scopeSelector) ->
     atom.config.set 'multi-wrap-guide.columns', @columns, scopeSelector: scopeSelector
     n = @columns.length
     if n > 0
       atom.config.set 'editor.preferredLineLength', @columns[n - 1], scopeSelector: scopeSelector
 
+  # Private: Save current rows to atom config using given scope selector.
+  saveRows: (scopeSelector) ->
+    atom.config.set 'multi-wrap-guide.rows', @rows, scopeSelector: scopeSelector
+
+  # Private: Sets current columns and saves to config if auto save enabled.
+  setColumns: (columns) ->
+    @columns = @uniqueSort columns
+    @saveColumns @getRootScopeSelector() if @doAutoSave()
+
   # Private: Sets current rows and saves to config if auto save enabled.
   setRows: (rows) ->
     @rows = @uniqueSort rows
-    scopeSelector = @getRootScopeSelector()
-    return unless @doAutoSave()
-    atom.config.set 'multi-wrap-guide.rows', @rows, scopeSelector: scopeSelector
+    @saveRows @getRootScopeSelector() if @doAutoSave()
 
   # Private: Mouse leave event handler, cancels guide dragging.
   mouseLeaveGuide: (e) =>
