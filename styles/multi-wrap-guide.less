@@ -1,6 +1,8 @@
 @import "syntax-variables";
 @import "ui-variables";
 
+@guide-index: 1;
+
 atom-text-editor::shadow {
   @grab-height: 1em;
   @grab-width: 1em;
@@ -14,13 +16,12 @@ atom-text-editor::shadow {
     position: absolute;
     left: 0;
     width: 100%;
-    z-index: 100;
+    z-index: @guide-index;
     height: @grab-height;
 
     .multi-wrap-guide-line {
       position: relative;
       width: 100%;
-      z-index: 100;
       margin-top: @grab-height / 2;
       margin-bottom: @grab-height / 2;
       height: 1px;
@@ -32,7 +33,6 @@ atom-text-editor::shadow {
         left: 0;
         display: none;
         overflow-y: visible;
-        z-index: 110;
         padding: 6px 2px;
         border: 0;
         background-color: @drag-color;
@@ -48,7 +48,6 @@ atom-text-editor::shadow {
     &.drag:hover {
       margin-top: -(@drag-height / 2);
       height: @drag-height;
-      z-index: 110;
 
       .multi-wrap-guide-line {
         margin-top: @drag-height / 2;
@@ -68,13 +67,12 @@ atom-text-editor::shadow {
     position: absolute;
     top: 0;
     height: 100%;
-    z-index: 100;
+    z-index: @guide-index;
     width: @grab-width;
 
     .multi-wrap-guide-line {
       position: relative;
       height: 100%;
-      z-index: 100;
       margin-left: @grab-width / 2;
       margin-right: @grab-width / 2;
       width: 1px;
@@ -86,7 +84,6 @@ atom-text-editor::shadow {
         top: 0;
         display: none;
         overflow-x: visible;
-        z-index: 110;
         padding: 2px 6px;
         border: 0;
         background-color: @drag-color;
@@ -102,7 +99,6 @@ atom-text-editor::shadow {
     &.drag:hover {
       margin-left: -(@drag-width / 2);
       width: @drag-width;
-      z-index: 110;
 
       .multi-wrap-guide-line {
         margin-left: @drag-width / 2;
@@ -115,4 +111,8 @@ atom-text-editor::shadow {
       }
     }
   }
+}
+
+atom-text-editor::shadow .cursors .cursor {
+  z-index: @guide-index + 1;
 }
