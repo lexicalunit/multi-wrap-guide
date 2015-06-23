@@ -92,7 +92,6 @@ atom-text-editor::shadow {
 
 - More spec test coverage.
 - Up-to-date screenshots.
-- When code is folded/unfolded, update horizontal guides (Blocked due to no good event to trigger off of).
 
 ## Notice
 

@@ -77,9 +77,10 @@ class MultiWrapGuideView extends View
   # Private: Sets up wrap guide event and command handlers.
   handleEvents: ->
     @configSubs = @handleConfigEvents()
-
     redrawCallback = =>
       @redraw()
+
+    # respond to editor events
     @subs.add atom.config.onDidChange 'editor.fontSize', ->
       # setTimeout() to wait for @editorElement.getDefaultCharacterWidth() measurement to happen
       setTimeout redrawCallback, 0
@@ -97,34 +98,39 @@ class MultiWrapGuideView extends View
       @rows = @getRows()
       redrawCallback()
 
-    ## TODO: When code is folded/unfolded, we need to update horizontal guides.
-    ##
-    ## Possible events to trigger off of:
-    ##   - onDid[Add/Remove]Decoration: happens too often. Best possible solution?
-    ##   - onDidUpdateMarkers: happens way too often.
-    ##   - onDidChange w/ filter for events we care about: happens waaaaaay too often!
-    ##
-    ## Using any of these events requires debounce/threshold logic :(
-    ##
-    ## Workaround: Redraw only onDidChangeScrollTop.
-    ##
-    # handleUpdateMarkers = ->
-    #   redrawCallback()
-    # @subs.add @editor.onDidAddDecoration _.debounce(handleUpdateMarkers, 500)
-    # @subs.add @editor.onDidRemoveDecoration _.debounce(handleUpdateMarkers, 500)
+    # respond to code folding events
+    gutter = @editorElement.querySelector('::shadow .gutter')
+    $(gutter).on 'click', '.line-number.foldable .icon-right', (event) ->
+      redrawCallback()
+    @subs.add atom.commands.add 'atom-text-editor',
+      'editor:fold-all': -> redrawCallback()
+      'editor:unfold-all': -> redrawCallback()
+      'editor:fold-current-row': -> redrawCallback()
+      'editor:unfold-current-row': -> redrawCallback()
+      'editor:fold-selection': -> redrawCallback()
+      'editor:fold-at-indent-level-1': -> redrawCallback()
+      'editor:fold-at-indent-level-2': -> redrawCallback()
+      'editor:fold-at-indent-level-3': -> redrawCallback()
+      'editor:fold-at-indent-level-4': -> redrawCallback()
+      'editor:fold-at-indent-level-5': -> redrawCallback()
+      'editor:fold-at-indent-level-6': -> redrawCallback()
+      'editor:fold-at-indent-level-7': -> redrawCallback()
+      'editor:fold-at-indent-level-8': -> redrawCallback()
+      'editor:fold-at-indent-level-9': -> redrawCallback()
 
+    # respond to mouse move event to keep track of current row, col position
     @subs.add @editorElement, 'mousemove', (e) =>
       [col, row] = @positionFromMouseEvent e
       @currentCursorColumn = col
       @currentCursorRow = row
 
+    # respond to multi-wrap-guide commands
     @subs.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:create-vertical-guide': => @createVerticalGuide @currentCursorColumn
-    @subs.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:create-horizontal-guide': => @createHorizontalGuide @currentCursorRow
-    @subs.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorRow, @currentCursorColumn
 
+    # respond to multi-wrap-guide events
     @emitter.on 'did-toggle-lock', =>
       @locked = not @locked
       if @locked
