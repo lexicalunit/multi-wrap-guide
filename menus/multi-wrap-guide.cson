@@ -1,10 +1,10 @@
 'menu': [
-    label: 'Packages'
+  label: 'Packages'
+  submenu: [
+    label: 'Multi Wrap Guide'
     submenu: [
-      label: 'Multi Wrap Guide'
-      submenu: [
-        { label: '', command: 'multi-wrap-guide:toggle-lock' }
-        { label: '', command: 'multi-wrap-guide:toggle' }
-      ]
+      { label: '', command: 'multi-wrap-guide:toggle-lock' }
+      { label: '', command: 'multi-wrap-guide:toggle' }
     ]
   ]
+]

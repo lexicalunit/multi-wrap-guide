@@ -31,7 +31,7 @@ describe "MultiWrapGuide", ->
       wrapGuideView = editorElement.rootElement.querySelector(".multi-wrap-guide-view")
 
   describe ".activate", ->
-    getWrapGuideViews  = ->
+    getWrapGuideViews = ->
       wrapGuideViews = []
       atom.workspace.getTextEditors().forEach (editor) ->
         view = atom.views.getView(editor).rootElement.querySelector(".multi-wrap-guide-view")
