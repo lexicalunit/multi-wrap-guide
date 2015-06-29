@@ -14,16 +14,22 @@ module.exports =
     locked:
       type: 'boolean'
       default: false
+      description: 'Disable draggable guides'
     rows:
       default: []
       type: 'array'
       items:
         type: 'integer'
+    silent:
+      type: 'boolean'
+      default: false
+      description: 'Silence guide tooltips'
 
   contextMenu: null           # Disposable object of current context menu.
   emitter: null               # Emitter object.
   enabled: true               # True iff guide lines are enabled.
   locked: false               # True iff guide lines are locked.
+  silent: false               # True iff guide tooltips are disabled.
   subs: null                  # SubAtom object.
   views: {}                   # Hash of MultiWrapGuideView objects by editor.id.
 
@@ -31,6 +37,8 @@ module.exports =
   labelLockGuides: '🔒 Lock Guides'
   labelDisableGuides: '❌ Disable Guides'
   labelEnableGuides: '✅ Enable Guides'
+  labelUnsilenceGuides: '🔔 Unsilence Guide tooltips'
+  labelSilenceGuides: '🔕 Silence Guide tooltips'
   labelCreateVerticalGuide: '⇣ Create Vertical Guide'
   labelCreateHorizontalGuide: '⇢ Create Horizontal Guide'
   labelRemoveGuide: 'Remove Guide'
@@ -44,6 +52,7 @@ module.exports =
     @emitter = new Emitter
     @subs = new SubAtom
     @locked = atom.config.get 'multi-wrap-guide.locked'
+    @silent = atom.config.get 'multi-wrap-guide.silent'
     @enabled = atom.config.get 'multi-wrap-guide.enabled'
     @disableDefaultWrapGuidePackage()
     @handleEvents()
@@ -71,6 +80,10 @@ module.exports =
   onDidToggleLock: (fn) ->
     @emitter.on 'did-toggle-lock', fn
 
+  # Public: Trigger callback on did-toggle-silent events.
+  onDidToggleSilent: (fn) ->
+    @emitter.on 'did-toggle-silent', fn
+
   # Public: Trigger callback on did-toggle events.
   onDidToggle: (fn) ->
     @emitter.on 'did-toggle', fn
@@ -79,6 +92,7 @@ module.exports =
   handleEvents: ->
     @subs.add atom.commands.add 'atom-workspace',
       'multi-wrap-guide:toggle-lock': => @emitter.emit 'did-toggle-lock'
+      'multi-wrap-guide:toggle-silent': => @emitter.emit 'did-toggle-silent'
       'multi-wrap-guide:toggle': => @emitter.emit 'did-toggle'
       'multi-wrap-guide:make-current-settings-the-default': => @emitter.emit 'make-default'
       'multi-wrap-guide:save-current-settings': => @emitter.emit 'make-scope'
@@ -87,6 +101,11 @@ module.exports =
       @updateMenus()
       return unless @doAutoSave()
       atom.config.set 'multi-wrap-guide.locked', @locked
+    @onDidToggleSilent =>
+      @silent = not @silent
+      @updateMenus()
+      return unless @doAutoSave()
+      atom.config.set 'multi-wrap-guide.silent', @silent
     @onDidToggle =>
       @enabled = not @enabled
       @updateMenus()
@@ -122,6 +141,10 @@ module.exports =
       submenu.push { label: @labelDisableGuides, command: 'multi-wrap-guide:toggle' }
     else
       submenu.push { label: @labelEnableGuides, command: 'multi-wrap-guide:toggle' }
+    if @silent
+      submenu.push { label: @labelUnsilenceGuides, command: 'multi-wrap-guide:toggle-silent' }
+    else
+      submenu.push { label: @labelSilenceGuides, command: 'multi-wrap-guide:toggle-silent' }
     @contextMenu = atom.contextMenu.add
       'atom-text-editor': [
         label: 'Multi Wrap Guide'
@@ -131,24 +154,21 @@ module.exports =
   # Private: Updates package menu and context menus dynamically.
   updateMenus: ->
     @updateContextMenu()
-
     grab = (obj, attr, val) ->
       for item in obj
         if item[attr] is val
           return item
-
     packages = grab atom.menu.template, 'label', 'Packages'
     return unless packages?
-
     ourMenu = grab packages.submenu, 'label', 'Multi Wrap Guide'
     return unless ourMenu?
-
     locker = grab ourMenu.submenu, 'command', 'multi-wrap-guide:toggle-lock'
     if locker?
       locker.label = if @locked then @labelUnlockGuides else @labelLockGuides
-
+    silencer = grab ourMenu.submenu, 'command', 'multi-wrap-guide:toggle-silent'
+    if silencer?
+      silencer.label = if @silent then @labelUnsilenceGuides else @labelSilenceGuides
     toggler = grab ourMenu.submenu, 'command', 'multi-wrap-guide:toggle'
     if toggler?
       toggler.label = if @enabled then @labelDisableGuides else @labelEnableGuides
-
     atom.menu.update()

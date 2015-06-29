@@ -5,6 +5,7 @@
     submenu: [
       { label: '', command: 'multi-wrap-guide:toggle-lock' }
       { label: '', command: 'multi-wrap-guide:toggle' }
+      { label: '', command: 'multi-wrap-guide:toggle-silent' }
     ]
   ]
 ]

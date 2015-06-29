@@ -15,6 +15,7 @@ class MultiWrapGuideView extends View
   linesView: null             # Attached lines view.
   locked: false               # True iff guide lines are locked.
   rows: []                    # Current row positions.
+  silent: false               # True iff guide tooltips are disabled.
   subs: null                  # SubAtom object for general event handlers.
   visible: true               # True iff guide lines are currently visible.
 
@@ -25,6 +26,7 @@ class MultiWrapGuideView extends View
   initialize: (@editor, @emitter) ->
     @subs = new SubAtom
     @locked = atom.config.get 'multi-wrap-guide.locked'
+    @silent = atom.config.get 'multi-wrap-guide.silent'
     @enabled = atom.config.get 'multi-wrap-guide.enabled'
     @editorElement = atom.views.getView editor
     @attach()
@@ -132,6 +134,9 @@ class MultiWrapGuideView extends View
 
     # respond to multi-wrap-guide events
     @emitter.on 'did-toggle-lock', =>
+      @silent = not @silent
+      @redraw()
+    @emitter.on 'did-toggle-lock', =>
       @locked = not @locked
       if @locked
         @lock()
@@ -161,6 +166,9 @@ class MultiWrapGuideView extends View
   handleConfigEvents: ->
     updateGuidesCallback = =>
       [@rows, @columns] = [@getRows(), @getColumns()]
+      @locked = atom.config.get('multi-wrap-guide.locked')
+      @silent = atom.config.get('multi-wrap-guide.silent')
+      @enabled = atom.config.get('multi-wrap-guide.enabled')
       @redraw()
     subs = new SubAtom
     scope = @editor.getRootScopeDescriptor()
@@ -170,6 +178,7 @@ class MultiWrapGuideView extends View
     scopedSubscribe 'multi-wrap-guide.columns', updateGuidesCallback
     scopedSubscribe 'multi-wrap-guide.rows', updateGuidesCallback
     subs.add atom.config.onDidChange 'multi-wrap-guide.locked', updateGuidesCallback
+    subs.add atom.config.onDidChange 'multi-wrap-guide.silent', updateGuidesCallback
     subs.add atom.config.onDidChange 'multi-wrap-guide.enabled', updateGuidesCallback
     subs
 
@@ -279,7 +288,7 @@ class MultiWrapGuideView extends View
       position = next // width
     if isHorizontal
       position = @editor.bufferRowForScreenRow(position)
-    guide.prop 'title', position
+    guide.prop 'title', position unless @silent
     guide.find('div.multi-wrap-guide-tip').text position
     false
 
@@ -379,7 +388,7 @@ class MultiWrapGuideView extends View
       line.append tip
       guide = @createElement 'div', 'multi-wrap-guide'
       guide.addClass 'draggable' unless @locked
-      guide.prop 'title', position
+      guide.prop 'title', position unless @silent
       guide.mousedown guide, @mouseDownGuide
       guide.append line
       if group.hasClass 'horizontal'
