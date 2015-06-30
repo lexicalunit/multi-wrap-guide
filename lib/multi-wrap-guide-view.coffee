@@ -5,7 +5,6 @@ SubAtom = require 'sub-atom'
 module.exports =
 class MultiWrapGuideView extends View
   columns: []                 # Current column positions.
-  configSubs: null            # SubAtom object for config event handlers.
   currentCursorColumn: null   # Current mouse position in column position.
   currentCursorRow: null      # Current mouse position in row position.
   editor: null                # Attached editor.
@@ -41,8 +40,6 @@ class MultiWrapGuideView extends View
     @linesView.find('div.multi-wrap-guide-view').empty().remove()
     @subs?.dispose()
     @subs = null
-    @configSubs?.dispose()
-    @configSubs = null
 
   # Private: Returns [left, top] offsets of mouse curosr from a given mouse event.
   offsetFromMouseEvent: (e) ->
@@ -78,7 +75,6 @@ class MultiWrapGuideView extends View
 
   # Private: Sets up wrap guide event and command handlers.
   handleEvents: ->
-    @configSubs = @handleConfigEvents()
     redrawCallback = =>
       @redraw()
 
@@ -94,8 +90,6 @@ class MultiWrapGuideView extends View
       @attach()
       redrawCallback()
     @subs.add @editor.onDidChangeGrammar =>
-      @configSubs.dispose()
-      @configSubs = @handleConfigEvents()
       @columns = @getColumns()
       @rows = @getRows()
       redrawCallback()
@@ -161,26 +155,6 @@ class MultiWrapGuideView extends View
       scopeSelector = @getRootScopeSelector()
       @saveColumns scopeSelector
       @saveRows scopeSelector
-
-  # Private: Sets up wrap guide configuration change event handlers.
-  handleConfigEvents: ->
-    updateGuidesCallback = =>
-      [@rows, @columns] = [@getRows(), @getColumns()]
-      @locked = atom.config.get('multi-wrap-guide.locked')
-      @silent = atom.config.get('multi-wrap-guide.silent')
-      @enabled = atom.config.get('multi-wrap-guide.enabled')
-      @redraw()
-    subs = new SubAtom
-    scope = @editor.getRootScopeDescriptor()
-    scopedSubscribe = (key, callback) ->
-      subs.add atom.config.onDidChange key, scope: scope, callback
-    scopedSubscribe 'editor.preferredLineLength', updateGuidesCallback
-    scopedSubscribe 'multi-wrap-guide.columns', updateGuidesCallback
-    scopedSubscribe 'multi-wrap-guide.rows', updateGuidesCallback
-    subs.add atom.config.onDidChange 'multi-wrap-guide.locked', updateGuidesCallback
-    subs.add atom.config.onDidChange 'multi-wrap-guide.silent', updateGuidesCallback
-    subs.add atom.config.onDidChange 'multi-wrap-guide.enabled', updateGuidesCallback
-    subs
 
   # Private: Creates a new JQuery DOM element with given type and classes.
   createElement: (type, classes...) ->
