@@ -59,7 +59,7 @@ module.exports =
     atom.workspace.observeTextEditors (editor) =>
       @views[editor.id] = new MultiWrapGuideView editor, @emitter
       @subs.add editor.onDidDestroy =>
-        @views[editor.id].destroy()
+        @views[editor.id]?.destroy()
         delete @views[editor.id]
     # setTimeout avoids race condition for insertion of context menus
     setTimeout (=> @updateMenus()), 0
@@ -73,7 +73,7 @@ module.exports =
     @contextMenu?.dispose()
     @contextMenu = null
     for id, view of @views
-      view.destroy()
+      view?.destroy()
     @views = {}
 
   # Public: Trigger callback on did-toggle-lock events.
