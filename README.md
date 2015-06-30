@@ -1,6 +1,6 @@
 # Multi Wrap Guide
 
-[![Build Status](https://travis-ci.org/lexicalunit/multi-wrap-guide.svg?branch=master)](https://travis-ci.org/lexicalunit/multi-wrap-guide) [![Dependency Status](https://david-dm.org/lexicalunit/multi-wrap-guide.svg)](https://david-dm.org/lexicalunit/multi-wrap-guide) [![Build status](https://ci.appveyor.com/api/projects/status/a92pkb2p3qpt2q1n/branch/master?svg=true)](https://ci.appveyor.com/project/lexicalunit/multi-wrap-guide/branch/master)
+[![Build Status](https://travis-ci.org/lexicalunit/multi-wrap-guide.svg?branch=master)](https://travis-ci.org/lexicalunit/multi-wrap-guide) [![Dependency Status](https://david-dm.org/lexicalunit/multi-wrap-guide.svg)](https://david-dm.org/lexicalunit/multi-wrap-guide)
 
 Fully customizable wrap guides at multiple column positions.
 
