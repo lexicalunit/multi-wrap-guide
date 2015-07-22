@@ -2,19 +2,19 @@
 
 [![Build Status](https://travis-ci.org/lexicalunit/multi-wrap-guide.svg?branch=master)](https://travis-ci.org/lexicalunit/multi-wrap-guide) [![Dependency Status](https://david-dm.org/lexicalunit/multi-wrap-guide.svg)](https://david-dm.org/lexicalunit/multi-wrap-guide)
 
-Fully customizable wrap guides at multiple column positions.
+Fully customizable wrap guides at arbitrary column positions.
 
-**Multiple wrap guides**
+**Wrap guides!**
 
 ![guides](https://cloud.githubusercontent.com/assets/1903876/8047184/b1fc4a9c-0e07-11e5-943f-ebffd647c2e0.png)
 
-**Draggable wrap guides**
+**Draggable 'em!**
 
 ![drag](https://cloud.githubusercontent.com/assets/1903876/8047183/b1f95c24-0e07-11e5-9c53-d2e1ba4cd273.gif)
 
-> Easily disable draggable guides by using the `Multi Wrap Guide: Toggle Lock` command. This is especially useful when draggable guides are interfering with text selection.
+> Disable draggable guides by using the `Multi Wrap Guide: Toggle Lock` command. This is useful when draggable guides are interfering with text selection.
 
-**Create and remove guides easily**
+**Create and remove 'em!**
 
 ![create](https://cloud.githubusercontent.com/assets/1903876/8047182/b1f6e340-0e07-11e5-8db5-99add2af6646.gif)
 
@@ -42,7 +42,7 @@ Then add something like the following under the root `'*'` scope.
 
 ## Styling
 
-You can modify the styles applied to guides created by this package using your `styles.less` file. Open it with the following command.
+Configure styles applied to guides created by this package using your `styles.less` file. Open it with the following command.
 
 ```
 Command Palette ➔ Application: Open Your Stylesheet
@@ -63,7 +63,7 @@ atom-text-editor::shadow {
 }
 ```
 
-Or if you want to get really fancy, you can set different colors and widths for each column:
+Or if you want to get super fancy, you can set different colors and widths for each column:
 
 ```less
 atom-text-editor::shadow {
