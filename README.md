@@ -8,7 +8,7 @@ Fully customizable wrap guides at arbitrary column positions.
 
 ![guides](https://cloud.githubusercontent.com/assets/1903876/8047184/b1fc4a9c-0e07-11e5-943f-ebffd647c2e0.png)
 
-**Draggable 'em!**
+**Drag 'em!**
 
 ![drag](https://cloud.githubusercontent.com/assets/1903876/8047183/b1f95c24-0e07-11e5-9c53-d2e1ba4cd273.gif)
 
