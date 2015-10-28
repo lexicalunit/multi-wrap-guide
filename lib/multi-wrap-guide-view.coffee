@@ -16,7 +16,6 @@ class MultiWrapGuideView extends View
   rows: []                    # Current row positions.
   silent: false               # True iff guide tooltips are disabled.
   subs: null                  # SubAtom object for general event handlers.
-  visible: true               # True iff guide lines are currently visible.
 
   @content: ->
     @div class: 'multi-wrap-guide-view'
