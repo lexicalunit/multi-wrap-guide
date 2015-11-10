@@ -94,7 +94,7 @@ class MultiWrapGuideView extends View
       redrawCallback()
 
     # respond to code folding events
-    gutter = @editorElement.querySelector('::shadow .gutter')
+    gutter = @editorElement.shadowRoot.querySelector('.gutter')
     $(gutter).on 'click', '.line-number.foldable .icon-right', (event) ->
       redrawCallback()
     @subs.add atom.commands.add 'atom-text-editor',
