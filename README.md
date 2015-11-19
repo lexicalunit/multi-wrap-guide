@@ -95,4 +95,4 @@ atom-text-editor::shadow {
 
 ## Notice
 
-Activating this package disables the default Atom `wrap-guide` package automatically.
+Activating this package disables the default Atom `wrap-guide` package automatically. To go back to using the default wrap guide you'll need to deactive/uninstall `multi-wrap-guide` and then manually re-enable the `wrap-guide` package.
