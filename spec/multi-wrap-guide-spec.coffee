@@ -54,7 +54,7 @@ describe "MultiWrapGuide", ->
       expect(width).toBeGreaterThan(0)
       views = getWrapGuideViews()
       guide = views[0].find('.multi-wrap-guide')
-      expect(getLeftPosition(guide)).toBe(width)
+      expect(getLeftPosition(guide)).toBe(parseInt(width))
       expect(guide).toBeVisible()
 
   describe "when the font size changes", ->
@@ -86,7 +86,7 @@ describe "MultiWrapGuide", ->
       editor.setScrollLeft(10)
 
       guide = views[0].find('.multi-wrap-guide')
-      expect(getLeftPosition(guide)).toBe(initial - 10)
+      expect(getLeftPosition(guide)).toBe(parseInt(initial - 10))
       expect(guide).toBeVisible()
 
   describe "when the editor's grammar changes", ->
