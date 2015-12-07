@@ -75,7 +75,7 @@ describe "MultiWrapGuide", ->
   describe "when the editor's scroll left changes", ->
     it "updates the wrap guide position to a relative position on screen", ->
       editor.setText("a long line which causes the editor to scroll")
-      editor.setWidth(100)
+      editorElement.setWidth(100)
 
       views = getWrapGuideViews()
       expect(views.length).toBe(1)
@@ -83,7 +83,7 @@ describe "MultiWrapGuide", ->
       initial = getLeftPosition(guide)
       expect(initial).toBeGreaterThan(0)
 
-      editor.setScrollLeft(10)
+      editorElement.setScrollLeft(10)
 
       guide = views[0].find('.multi-wrap-guide')
       expect(getLeftPosition(guide)).toBe(parseInt(initial - 10))

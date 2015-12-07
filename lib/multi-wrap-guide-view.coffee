@@ -51,8 +51,8 @@ class MultiWrapGuideView extends View
   # Private: Returns [column, row] numbers of mouse cursor from a given mouse event.
   positionFromMouseEvent: (e) ->
     [offsetLeft, offsetTop] = @offsetFromMouseEvent(e)
-    targetLeft = offsetLeft + @editor.getScrollLeft()
-    targetTop = offsetTop + @editor.getScrollTop()
+    targetLeft = offsetLeft + @editorElement.getScrollLeft()
+    targetTop = offsetTop + @editorElement.getScrollTop()
     left = 0
     column = 0
     charWidth = @editorElement.getDefaultCharacterWidth()
@@ -81,8 +81,8 @@ class MultiWrapGuideView extends View
     @subs.add atom.config.onDidChange 'editor.fontSize', ->
       # setTimeout() to wait for @editorElement.getDefaultCharacterWidth() measurement to happen
       setTimeout redrawCallback, 0
-    @subs.add @editor.onDidChangeScrollLeft -> redrawCallback()
-    @subs.add @editor.onDidChangeScrollTop -> redrawCallback()
+    @subs.add @editorElement.onDidChangeScrollLeft -> redrawCallback()
+    @subs.add @editorElement.onDidChangeScrollTop -> redrawCallback()
     @subs.add @editor.onDidChangePath -> redrawCallback()
     @subs.add @editor.onDidChangeSoftWrapped -> redrawCallback()
     @subs.add @editorElement.onDidAttach =>
@@ -246,12 +246,12 @@ class MultiWrapGuideView extends View
     if isHorizontal
       targetTop = offsetTop
       guide.css 'top', "#{targetTop}px"
-      offset = parseInt(guide.css 'top') + @editor.getScrollTop()
+      offset = parseInt(guide.css 'top') + @editorElement.getScrollTop()
       width = @editor.getLineHeightInPixels()
     else
       targetLeft = offsetLeft
       guide.css 'left', "#{targetLeft}px"
-      offset = parseInt(guide.css 'left') + @editor.getScrollLeft()
+      offset = parseInt(guide.css 'left') + @editorElement.getScrollLeft()
       width = @editorElement.getDefaultCharacterWidth()
     prev = (offset // width) * width
     next = (offset // width + 1) * width
@@ -344,8 +344,8 @@ class MultiWrapGuideView extends View
   appendGuides: (positions, horizontal) ->
     lineHeight = @editor.getLineHeightInPixels()
     charWidth = @editorElement.getDefaultCharacterWidth()
-    scrollTop = @editor.getScrollTop()
-    scrollLeft = @editor.getScrollLeft()
+    scrollTop = @editorElement.getScrollTop()
+    scrollLeft = @editorElement.getScrollLeft()
     group = @createElement 'div', 'multi-wrap-guide-group'
     if horizontal
       group.addClass 'horizontal'
