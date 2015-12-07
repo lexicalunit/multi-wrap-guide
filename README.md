@@ -20,7 +20,7 @@ Fully customizable wrap guides at arbitrary column positions.
 
 ## Uninstallation
 
-<div style="background-color: #fcf2f2; border-color: #dFb5b4; border-left: 5px solid #dfb5b4; padding: 0.5em;">Activating this package **disables** the default Atom `wrap-guide` package automatically. To go back to using the default wrap guide you'll need to deactivate or uninstall `multi-wrap-guide` *and then manually re-enable the `wrap-guide` package* in your Atom settings.</div>
+<p color="red">Activating this package <strong>disables</strong> the default Atom <code>wrap-guide</code> package automatically. To go back to using the default wrap guide you'll need to deactivate or uninstall <code>multi-wrap-guide</code><em>and then manually re-enable the <code>wrap-guide</code> package</em> in your Atom settings.</p>
 
 ## Configuration
 
