@@ -18,6 +18,10 @@ Fully customizable wrap guides at arbitrary column positions.
 
 ![create](https://cloud.githubusercontent.com/assets/1903876/8047182/b1f6e340-0e07-11e5-8db5-99add2af6646.gif)
 
+## Uninstallation
+
+<div style="background-color: #fcf2f2; border-color: #dFb5b4; border-left: 5px solid #dfb5b4; padding: 0.5em;">Activating this package **disables** the default Atom `wrap-guide` package automatically. To go back to using the default wrap guide you'll need to deactivate or uninstall `multi-wrap-guide` *and then manually re-enable the `wrap-guide` package* in your Atom settings.</div>
+
 ## Configuration
 
 By default, Multi Wrap Guide will use your `editor.preferredLineLength` setting or [language specific settings](http://blog.atom.io/2014/10/31/language-scoped-config.html). You can override this by editing your `config.cson` file to provide custom settings. First open the file using the following command.
@@ -92,7 +96,3 @@ atom-text-editor::shadow {
 
 - More spec test coverage.
 - Up-to-date screenshots.
-
-## Notice
-
-Activating this package disables the default Atom `wrap-guide` package automatically. To go back to using the default wrap guide you'll need to deactive/uninstall `multi-wrap-guide` and then manually re-enable the `wrap-guide` package.
