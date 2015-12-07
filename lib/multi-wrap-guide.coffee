@@ -1,29 +1,38 @@
 module.exports =
   config:
     autoSaveChanges:
+      title: 'Automatically Save Changes'
       type: 'boolean'
       default: true
+      description: 'Automatically save any changes to multi-wrap-guide settings to your `config.cson` file.'
     columns:
+      title: 'Vertical Wrap Guide Positions'
       default: []
       type: 'array'
       items:
         type: 'integer'
+      description: 'Array listing column numbers at which to draw vertical wrap guides.'
     enabled:
+      title: 'Enable Package'
       type: 'boolean'
       default: true
     locked:
+      title: 'Lock Guides'
       type: 'boolean'
       default: false
-      description: 'Disable draggable guides'
+      description: 'Locking guides disables draggable guides.'
     rows:
+      title: 'Horizontal Wrap Guide Positions'
       default: []
       type: 'array'
       items:
         type: 'integer'
+      description: 'Array listing row numbers at which to draw horizontal wrap guides.'
     silent:
+      title: 'Silent Guides'
       type: 'boolean'
       default: false
-      description: 'Silence guide tooltips'
+      description: 'Silence guide tooltips.'
 
   contextMenu: null           # Disposable object of current context menu.
   emitter: null               # Emitter object.

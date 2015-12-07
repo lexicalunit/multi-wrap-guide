@@ -20,7 +20,8 @@ Fully customizable wrap guides at arbitrary column positions.
 
 ## Uninstallation
 
-<div style="background-color: #fcf2f2; border-color: #dFb5b4; border-left: 5px solid #dfb5b4; padding: 0.5em;">:warning: Activating this package <strong>disables</strong> the default Atom <code>wrap-guide</code> package automatically. To go back to using the default wrap guide you'll need to deactivate or uninstall <code>multi-wrap-guide</code> <em>and then manually re-enable the <code>wrap-guide</code> package</em> in your Atom settings.</div>
+<div style="background-color: #fcf2f2; border-color: #dFb5b4; border-left: 5px solid #dfb5b4; padding: 0.5em;"><p>:warning: Activating this package <strong>disables</strong> the default Atom <code>wrap-guide</code> package automatically. To go back to using the default wrap guide you'll need to deactivate or uninstall <code>multi-wrap-guide</code> <em>and then manually re-enable the <code>wrap-guide</code> package</em> in your Atom settings.</p>
+<p>Also, if you have changed your right-most vertical wrap guide since installing <code>multi-wrap-guide</code>, your <code>editor.preferredLineLength</code> will be different than it was before you installed <code>multi-wrap-guide</code>. This is not a permanent change as you are of course free to change your <code>editor.preferredLineLength</code> setting before, during, and after installing this package. Nore also that these changes are both global and grammar specific.</p></div>
 
 ## Configuration
 
@@ -42,7 +43,7 @@ Then add something like the following under the root `'*'` scope.
     ]
 ```
 
-> Note that the final column given will act as your `editor.preferredLineLength` setting. This affects things such as soft word wrap if you also have `editor.softWrapAtPreferredLineLength` enabled.
+> :warning: Note that the final column given will act as your `editor.preferredLineLength` setting. This affects things such as soft word wrap if you also have `editor.softWrapAtPreferredLineLength` enabled.
 
 ## Styling
 
