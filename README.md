@@ -1,6 +1,10 @@
 # Multi Wrap Guide
 
-[![Build Status](https://travis-ci.org/lexicalunit/multi-wrap-guide.svg?branch=master)](https://travis-ci.org/lexicalunit/multi-wrap-guide) [![Dependency Status](https://david-dm.org/lexicalunit/multi-wrap-guide.svg)](https://david-dm.org/lexicalunit/multi-wrap-guide)
+[![apm package][apm-ver-link]][releases]
+[![][travis-ci-badge]][travis-ci]
+[![][david-badge]][david]
+[![][dl-badge]][apm-pkg-link]
+[![][mit-badge]][mit]
 
 Fully customizable wrap guides at arbitrary column positions.
 
@@ -97,3 +101,20 @@ atom-text-editor::shadow {
 
 - More spec test coverage.
 - Up-to-date screenshots.
+
+---
+
+[MIT][mit] © [lexicalunit][author] et [al][contributors]
+
+[mit]:              http://opensource.org/licenses/MIT
+[author]:           http://github.com/lexicalunit
+[contributors]:     https://github.com/lexicalunit/multi-wrap-guide/graphs/contributors
+[releases]:         https://github.com/lexicalunit/multi-wrap-guide/releases
+[mit-badge]:        https://img.shields.io/apm/l/multi-wrap-guide.svg
+[apm-pkg-link]:     https://atom.io/packages/multi-wrap-guide
+[apm-ver-link]:     https://img.shields.io/apm/v/multi-wrap-guide.svg
+[dl-badge]:         http://img.shields.io/apm/dm/multi-wrap-guide.svg
+[travis-ci-badge]:  https://travis-ci.org/lexicalunit/multi-wrap-guide.svg?branch=master
+[travis-ci]:        https://travis-ci.org/lexicalunit/multi-wrap-guide
+[david-badge]:      https://david-dm.org/lexicalunit/multi-wrap-guide.svg
+[david]:            https://david-dm.org/lexicalunit/multi-wrap-guide
