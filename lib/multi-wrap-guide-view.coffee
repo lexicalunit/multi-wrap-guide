@@ -124,6 +124,7 @@ class MultiWrapGuideView extends View
       'multi-wrap-guide:create-vertical-guide': => @createVerticalGuide @currentCursorColumn
       'multi-wrap-guide:create-horizontal-guide': => @createHorizontalGuide @currentCursorRow
       'multi-wrap-guide:remove-guide': => @removeGuide @currentCursorRow, @currentCursorColumn
+      'multi-wrap-guide:line-break': => @lineBreak @currentCursorColumn
 
     # respond to multi-wrap-guide events
     @emitter.on 'did-toggle-lock', =>
@@ -214,6 +215,21 @@ class MultiWrapGuideView extends View
       @setRows update
       @didChangeGuides()
       return
+
+  # Private: Line breaks text at guide near the given column, if one exists.
+  lineBreak: (column) ->
+    return unless atom.workspace.getActiveTextEditor() is @editor
+    for i in [column, column - 1, column + 1, column - 2, column + 2]
+      index = @columns.indexOf(i)
+      if index > -1
+        preferredLineLength = atom.config.settings.editor.preferredLineLength
+        atom.config.settings.editor.preferredLineLength = i
+        editor = atom.workspace.getActiveTextEditor()
+        view = atom.views.getView editor
+        atom.commands.dispatch view, 'line-length-break:break'
+        atom.packages.activatePackage('line-length-break').then (pkg) ->
+          atom.config.settings.editor.preferredLineLength = preferredLineLength
+        break
 
   # Private: Locks guides so they can't be dragged.
   lock: ->
