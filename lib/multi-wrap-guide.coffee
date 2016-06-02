@@ -50,6 +50,7 @@ module.exports =
   labelSilenceGuides: '🔕 Silence Guide tooltips'
   labelCreateVerticalGuide: '⇣ Create Vertical Guide'
   labelCreateHorizontalGuide: '⇢ Create Horizontal Guide'
+  labelLineBreak: 'Line Break at Guide'
   labelRemoveGuide: 'Remove Guide'
 
   # Public: Activates package.
@@ -135,13 +136,14 @@ module.exports =
   updateContextMenu: ->
     @contextMenu?.dispose()
     @contextMenu = null
-    submenu = [
-      { label: @labelCreateVerticalGuide, command: 'multi-wrap-guide:create-vertical-guide' }
-      { label: @labelCreateHorizontalGuide, command: 'multi-wrap-guide:create-horizontal-guide' }
-      { type: 'separator' }
-      { label: @labelRemoveGuide, command: 'multi-wrap-guide:remove-guide' }
-      { type: 'separator' }
-    ]
+    submenu = []
+    submenu.push { label: @labelCreateVerticalGuide, command: 'multi-wrap-guide:create-vertical-guide' }
+    submenu.push { label: @labelCreateHorizontalGuide, command: 'multi-wrap-guide:create-horizontal-guide' }
+    if atom.packages.getLoadedPackage('line-length-break')?
+      submenu.push { label: @labelLineBreak, command: 'multi-wrap-guide:line-break' }
+    submenu.push { type: 'separator' }
+    submenu.push { label: @labelRemoveGuide, command: 'multi-wrap-guide:remove-guide' }
+    submenu.push { type: 'separator' }
     if @locked
       submenu.push { label: @labelUnlockGuides, command: 'multi-wrap-guide:toggle-lock' }
     else

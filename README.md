@@ -22,10 +22,14 @@ Fully customizable wrap guides at arbitrary column positions.
 
 ![create](https://cloud.githubusercontent.com/assets/1903876/8047182/b1f6e340-0e07-11e5-8db5-99add2af6646.gif)
 
+## Integration with Line Length Break
+
+The [`line-length-break`](https://atom.io/packages/line-length-break) package allows users to automatically hard break text at their editor's preferred line length. If you have this plugin installed, `multi-wrap-guide` will add a context sensitive menu item (right click on a wrap guide) that will let you line break at the selected wrap guide. Using the `Line Length Break: Break` will break at the farthest right wrap guide by default.
+
 ## Uninstallation
 
 <div style="background-color: #fcf2f2; border-color: #dFb5b4; border-left: 5px solid #dfb5b4; padding: 0.5em;"><p>:warning: Activating this package <strong>disables</strong> the default Atom <code>wrap-guide</code> package automatically. To go back to using the default wrap guide you'll need to deactivate or uninstall <code>multi-wrap-guide</code> <em>and then manually re-enable the <code>wrap-guide</code> package</em> in your Atom settings.</p>
-<p>Also, if you have changed your right-most vertical wrap guide since installing <code>multi-wrap-guide</code>, your <code>editor.preferredLineLength</code> will be different than it was before you installed <code>multi-wrap-guide</code>. This is not a permanent change as you are of course free to change your <code>editor.preferredLineLength</code> setting before, during, and after installing this package. Note also that these changes are both global and grammar specific.</p></div>
+<p>Also, if you have changed your right-most vertical wrap guide since installing <code>multi-wrap-guide</code>, your <code>editor.preferredLineLength</code> will be different than from before you installed <code>multi-wrap-guide</code>. This is not a permanent change as you are of course free to change your <code>editor.preferredLineLength</code> setting before, during, and after installing this package. Note also that these changes are both global and grammar specific.</p></div>
 
 ## Configuration
 
