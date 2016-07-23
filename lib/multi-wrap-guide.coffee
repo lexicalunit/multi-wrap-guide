@@ -16,6 +16,11 @@ module.exports =
       title: 'Enable Package'
       type: 'boolean'
       default: true
+    icons:
+      title: 'Enable Icons'
+      type: 'boolean'
+      default: true
+      description: 'Enables colorful icons in menus.'
     locked:
       title: 'Lock Guides'
       type: 'boolean'
@@ -42,16 +47,26 @@ module.exports =
   subs: null                  # SubAtom object.
   views: {}                   # Hash of MultiWrapGuideView objects by editor.id.
 
-  labelUnlockGuides: '🔓 Unlock Guides'
-  labelLockGuides: '🔒 Lock Guides'
-  labelDisableGuides: '❌ Disable Guides'
-  labelEnableGuides: '✅ Enable Guides'
-  labelUnsilenceGuides: '🔔 Unsilence Guide tooltips'
-  labelSilenceGuides: '🔕 Silence Guide tooltips'
-  labelCreateVerticalGuide: '⇣ Create Vertical Guide'
-  labelCreateHorizontalGuide: '⇢ Create Horizontal Guide'
-  labelLineBreak: 'Line Break at Guide'
-  labelRemoveGuide: 'Remove Guide'
+  labelUnlockGuides: ->
+    if atom.config.get 'multi-wrap-guide.icons' then '🔓 Unlock Guides' else 'Unlock Guides'
+  labelLockGuides: ->
+    if atom.config.get 'multi-wrap-guide.icons' then '🔒 Lock Guides' else 'Lock Guides'
+  labelDisableGuides: ->
+    if atom.config.get 'multi-wrap-guide.icons' then '❌ Disable Guides' else 'Disable Guides'
+  labelEnableGuides: ->
+    if atom.config.get 'multi-wrap-guide.icons' then '✅ Enable Guides' else 'Enable Guides'
+  labelUnsilenceGuides: ->
+    if atom.config.get 'multi-wrap-guide.icons' then '🔔 Unsilence Guide tooltips' else 'Unsilence Guide tooltips'
+  labelSilenceGuides: ->
+    if atom.config.get 'multi-wrap-guide.icons' then '🔕 Silence Guide tooltips' else 'Silence Guide tooltips'
+  labelCreateVerticalGuide: ->
+    if atom.config.get 'multi-wrap-guide.icons' then '⇣ Create Vertical Guide' else 'Create Vertical Guide'
+  labelCreateHorizontalGuide: ->
+    if atom.config.get 'multi-wrap-guide.icons' then '⇢ Create Horizontal Guide' else 'Create Horizontal Guide'
+  labelLineBreak: ->
+    'Line Break at Guide'
+  labelRemoveGuide: ->
+    'Remove Guide'
 
   # Public: Activates package.
   activate: ->
@@ -106,6 +121,8 @@ module.exports =
       'multi-wrap-guide:toggle': => @emitter.emit 'did-toggle'
       'multi-wrap-guide:make-current-settings-the-default': => @emitter.emit 'make-default'
       'multi-wrap-guide:save-current-settings': => @emitter.emit 'make-scope'
+    @subs.add atom.config.observe 'multi-wrap-guide.icons', (_) =>
+      @updateMenus()
     @onDidToggleLock =>
       @locked = not @locked
       @updateMenus()
@@ -137,25 +154,25 @@ module.exports =
     @contextMenu?.dispose()
     @contextMenu = null
     submenu = []
-    submenu.push { label: @labelCreateVerticalGuide, command: 'multi-wrap-guide:create-vertical-guide' }
-    submenu.push { label: @labelCreateHorizontalGuide, command: 'multi-wrap-guide:create-horizontal-guide' }
+    submenu.push { label: @labelCreateVerticalGuide(), command: 'multi-wrap-guide:create-vertical-guide' }
+    submenu.push { label: @labelCreateHorizontalGuide(), command: 'multi-wrap-guide:create-horizontal-guide' }
     if atom.packages.getLoadedPackage('line-length-break')?
-      submenu.push { label: @labelLineBreak, command: 'multi-wrap-guide:line-break' }
+      submenu.push { label: @labelLineBreak(), command: 'multi-wrap-guide:line-break' }
     submenu.push { type: 'separator' }
-    submenu.push { label: @labelRemoveGuide, command: 'multi-wrap-guide:remove-guide' }
+    submenu.push { label: @labelRemoveGuide(), command: 'multi-wrap-guide:remove-guide' }
     submenu.push { type: 'separator' }
     if @locked
-      submenu.push { label: @labelUnlockGuides, command: 'multi-wrap-guide:toggle-lock' }
+      submenu.push { label: @labelUnlockGuides(), command: 'multi-wrap-guide:toggle-lock' }
     else
-      submenu.push { label: @labelLockGuides, command: 'multi-wrap-guide:toggle-lock' }
+      submenu.push { label: @labelLockGuides(), command: 'multi-wrap-guide:toggle-lock' }
     if @enabled
-      submenu.push { label: @labelDisableGuides, command: 'multi-wrap-guide:toggle' }
+      submenu.push { label: @labelDisableGuides(), command: 'multi-wrap-guide:toggle' }
     else
-      submenu.push { label: @labelEnableGuides, command: 'multi-wrap-guide:toggle' }
+      submenu.push { label: @labelEnableGuides(), command: 'multi-wrap-guide:toggle' }
     if @silent
-      submenu.push { label: @labelUnsilenceGuides, command: 'multi-wrap-guide:toggle-silent' }
+      submenu.push { label: @labelUnsilenceGuides(), command: 'multi-wrap-guide:toggle-silent' }
     else
-      submenu.push { label: @labelSilenceGuides, command: 'multi-wrap-guide:toggle-silent' }
+      submenu.push { label: @labelSilenceGuides(), command: 'multi-wrap-guide:toggle-silent' }
     @contextMenu = atom.contextMenu.add
       'atom-text-editor': [
         label: 'Multi Wrap Guide'
@@ -175,11 +192,11 @@ module.exports =
     return unless ourMenu?
     locker = grab ourMenu.submenu, 'command', 'multi-wrap-guide:toggle-lock'
     if locker?
-      locker.label = if @locked then @labelUnlockGuides else @labelLockGuides
+      locker.label = if @locked then @labelUnlockGuides() else @labelLockGuides()
     silencer = grab ourMenu.submenu, 'command', 'multi-wrap-guide:toggle-silent'
     if silencer?
-      silencer.label = if @silent then @labelUnsilenceGuides else @labelSilenceGuides
+      silencer.label = if @silent then @labelUnsilenceGuides() else @labelSilenceGuides()
     toggler = grab ourMenu.submenu, 'command', 'multi-wrap-guide:toggle'
     if toggler?
-      toggler.label = if @enabled then @labelDisableGuides else @labelEnableGuides
+      toggler.label = if @enabled then @labelDisableGuides() else @labelEnableGuides()
     atom.menu.update()
