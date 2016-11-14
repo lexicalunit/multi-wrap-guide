@@ -3,7 +3,7 @@
 
 @guide-index: 1;
 
-atom-text-editor.editor {
+#atom-multi-wrap-guide() {
   @grab-height: 1em;
   @grab-width: 1em;
   @drag-height: 100%;
@@ -111,8 +111,19 @@ atom-text-editor.editor {
       }
     }
   }
+
+  .cursors .cursor {
+    z-index: @guide-index + 1;
+  }
 }
 
+atom-text-editor.editor {
+  #atom-multi-wrap-guide;
+}
+
+//////////////////////////////////////////
+// Deprecated. Remove in Atom v1.13.0.  //
+//////////////////////////////////////////
 atom-text-editor.editor .cursors .cursor {
-  z-index: @guide-index + 1;
+  #atom-multi-wrap-guide;
 }
