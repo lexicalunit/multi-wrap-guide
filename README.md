@@ -64,7 +64,7 @@ Command Palette ➔ Application: Open Your Stylesheet
 Then add modifications to the selectors shown below. For example, to make the guide lines purple and the tooltip green:
 
 ```less
-atom-text-editor::shadow {
+atom-text-editor.editor {
   .multi-wrap-guide {
     .multi-wrap-guide-line {
       background-color: purple;
@@ -79,7 +79,7 @@ atom-text-editor::shadow {
 Or if you want to get super fancy, you can set different colors and widths for each column:
 
 ```less
-atom-text-editor::shadow {
+atom-text-editor.editor {
   .multi-wrap-guide:nth-child(1) .multi-wrap-guide-line {
     background-color: fadeout(white, 60%);
     width: 1px;
