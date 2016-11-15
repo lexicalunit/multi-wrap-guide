@@ -26,7 +26,7 @@ class MultiWrapGuideView extends View
     @locked = atom.config.get 'multi-wrap-guide.locked'
     @silent = atom.config.get 'multi-wrap-guide.silent'
     @enabled = atom.config.get 'multi-wrap-guide.enabled'
-    @editorElement = atom.views.getView editor
+    @editorElement = atom.views.getView @editor
     @attach()
     @handleEvents()
     @columns = @getColumns()
@@ -94,7 +94,7 @@ class MultiWrapGuideView extends View
       redrawCallback()
 
     # respond to code folding events
-    gutter = @editorElement.shadowRoot.querySelector('.gutter')
+    gutter = @editorElement.rootElement.querySelector('.gutter')
     $(gutter).on 'click', '.line-number.foldable .icon-right', (event) ->
       redrawCallback()
     @subs.add atom.commands.add 'atom-text-editor',

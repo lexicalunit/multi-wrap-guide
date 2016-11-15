@@ -12,8 +12,8 @@ describe "MultiWrapGuide", ->
 
   beforeEach ->
     workspaceElement = atom.views.getView(atom.workspace)
-    workspaceElement.style.height = "200px"
-    workspaceElement.style.width = "1500px"
+    workspaceElement.style.height = '200px'
+    workspaceElement.style.width = '1500px'
 
     jasmine.attachToDOM(workspaceElement)
 
