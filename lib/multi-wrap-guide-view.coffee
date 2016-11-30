@@ -26,7 +26,7 @@ class MultiWrapGuideView extends View
     @locked = atom.config.get 'multi-wrap-guide.locked'
     @silent = atom.config.get 'multi-wrap-guide.silent'
     @enabled = atom.config.get 'multi-wrap-guide.enabled'
-    @editorElement = atom.views.getView editor
+    @editorElement = atom.views.getView @editor
     @attach()
     @handleEvents()
     @columns = @getColumns()
