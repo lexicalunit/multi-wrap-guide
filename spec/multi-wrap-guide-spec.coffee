@@ -32,7 +32,7 @@ describe "MultiWrapGuide", ->
 
   describe ".activate", ->
     it "appends a wrap guide to all existing and new editors", ->
-      expect(atom.workspace.getPanes().length).toBe 1
+      expect(atom.workspace.getTextEditors().length).toBe 1
 
       views = getWrapGuideViews()
       expect(views.length).toBe 1
@@ -43,7 +43,7 @@ describe "MultiWrapGuide", ->
       expect(getLeftPosition(guide)).toBeGreaterThan(0)
 
       atom.workspace.getActivePane().splitRight(copyActiveItem: true)
-      expect(atom.workspace.getPanes().length).toBe 2
+      expect(atom.workspace.getTextEditors().length).toBe 2
       views = getWrapGuideViews()
       expect(views.length).toBe 2
       expect(getLeftPosition(views[0].find('.multi-wrap-guide'))).toBeGreaterThan(0)
