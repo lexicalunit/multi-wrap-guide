@@ -33,21 +33,6 @@ add a context sensitive menu item (right click on a wrap guide) that will let yo
 selected wrap guide. Using the `Line Length Break: Break` will break at the farthest right wrap
 guide by default.
 
-## Uninstallation
-
-<div style="background-color: #FCF2F2; border-color: #DFB5B4; border-left: 5px solid #DFB5B4; padding: 0.5em;">
-<p>:warning: Activating this package <strong>disables</strong> the default Atom
-<code>wrap-guide</code> package automatically. To go back to using the default wrap guide you'll
-need to deactivate or uninstall <code>multi-wrap-guide</code> <em>and then manually re-enable the
-<code>wrap-guide</code> package</em> in your Atom settings.</p>
-<p>Also, if you have changed your right-most vertical wrap guide since installing
-<code>multi-wrap-guide</code>, your <code>editor.preferredLineLength</code> will be different than
-from before you installed <code>multi-wrap-guide</code>. This is not a permanent change as you are
-of course free to change your <code>editor.preferredLineLength</code> setting before, during, and
-after installing this package. Note also that these changes are both global and grammar
-specific.</p>
-</div>
-
 ## Configuration
 
 By default, Multi Wrap Guide will use your `editor.preferredLineLength` setting or
@@ -123,6 +108,20 @@ atom-text-editor.editor {
 ```
 
 ![colors][img-colors]
+
+## Uninstallation
+
+Activating this package **disables** the default Atom
+`wrap-guide` package automatically. To go back to using the default wrap guide you'll
+need to deactivate or uninstall `multi-wrap-guide` _and then manually re-enable the
+`wrap-guide` package_ in your Atom settings.
+
+Also, if you have changed your right-most vertical wrap guide since installing
+`multi-wrap-guide`, your `editor.preferredLineLength` will be different than
+from before you installed `multi-wrap-guide`. This is not a permanent change as you are
+of course free to change your `editor.preferredLineLength` setting before, during, and
+after installing this package. Note also that these changes are both global and grammar
+specific.
 
 ## Future Work
 
