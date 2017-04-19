@@ -10,9 +10,9 @@ class MultiWrapGuideView extends View
   editor: null                # Attached editor.
   editorElement: null         # Attached editor element.
   emitter: null               # Package emitter object.
-  enabled: true               # True iff guide lines are enabled.
-  linesView: null             # Attached lines view.
-  locked: false               # True iff guide lines are locked.
+  enabled: true               # True iff guide guides are enabled.
+  scrollView: null            # Attached scroll view.
+  locked: false               # True iff guide guides are locked.
   rows: []                    # Current row positions.
   silent: false               # True iff guide tooltips are disabled.
   subs: null                  # SubAtom object for general event handlers.
@@ -36,16 +36,16 @@ class MultiWrapGuideView extends View
 
   # Public: Destroys all wrap guides.
   destroy: ->
-    @linesView.find('div.multi-wrap-guide-view').empty().remove()
+    @scrollView.find('div.multi-wrap-guide-view').empty().remove()
     @subs?.dispose()
     @subs = null
 
   # Private: Returns [left, top] offsets of mouse curosr from a given mouse event.
   offsetFromMouseEvent: (e) ->
     {clientX, clientY} = event
-    linesClientRect = @linesView[0].getBoundingClientRect()
-    left = clientX - linesClientRect.left
-    top = clientY - linesClientRect.top
+    scrollClientRect = @scrollView[0].getBoundingClientRect()
+    left = clientX - scrollClientRect.left
+    top = clientY - scrollClientRect.top
     [left, top]
 
   # Private: Returns [column, row] numbers of mouse cursor from a given mouse event.
@@ -69,8 +69,8 @@ class MultiWrapGuideView extends View
 
   # Private: Attach wrap guides to editor.
   attach: ->
-    @linesView = $(@editorElement.rootElement.querySelector 'div.lines')
-    @linesView.append this
+    @scrollView = $(@editorElement.rootElement.querySelector '.scroll-view')
+    @scrollView.append this
 
   # Private: Sets up wrap guide event and command handlers.
   handleEvents: ->

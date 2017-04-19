@@ -41,8 +41,8 @@ module.exports =
 
   contextMenu: null           # Disposable object of current context menu.
   emitter: null               # Emitter object.
-  enabled: true               # True iff guide lines are enabled.
-  locked: false               # True iff guide lines are locked.
+  enabled: true               # True iff guide guides are enabled.
+  locked: false               # True iff guide guides are locked.
   silent: false               # True iff guide tooltips are disabled.
   subs: null                  # SubAtom object.
   views: {}                   # Hash of MultiWrapGuideView objects by editor.id.
