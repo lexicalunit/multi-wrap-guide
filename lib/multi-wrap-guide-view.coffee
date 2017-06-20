@@ -69,7 +69,7 @@ class MultiWrapGuideView extends View
 
   # Private: Attach wrap guides to editor.
   attach: ->
-    @scrollView = $(@editorElement.rootElement.querySelector '.scroll-view')
+    @scrollView = $(@editorElement.querySelector '.scroll-view')
     @scrollView.append this
 
   # Private: Sets up wrap guide event and command handlers.
@@ -94,7 +94,7 @@ class MultiWrapGuideView extends View
       redrawCallback()
 
     # respond to code folding events
-    gutter = @editorElement.rootElement.querySelector('.gutter')
+    gutter = @editorElement.querySelector('.gutter')
     $(gutter).on 'click', '.line-number.foldable .icon-right', (event) ->
       redrawCallback()
     @subs.add atom.commands.add 'atom-text-editor',
