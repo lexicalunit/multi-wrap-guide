@@ -74,9 +74,8 @@ describe "MultiWrapGuide", ->
 
   describe "when the editor's scroll left changes", ->
     it "updates the wrap guide position to a relative position on screen", ->
-      editor.setText("a long line which causes the editor to scroll")
+      editor.setText("a long line which causes the editor to scrol!" + Array(500).join("!"))
       editorElement.style.width = "100px"
-      atom.views.performDocumentPoll()
 
       views = getWrapGuideViews()
       expect(views.length).toBe(1)
