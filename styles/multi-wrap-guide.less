@@ -92,8 +92,15 @@
       }
     }
 
-    &.draggable:hover {
-      cursor: col-resize;
+    &:not(.draggable) {
+      pointer-events: none;
+    }
+
+    &.draggable {
+      pointer-events: auto;
+      &:hover {
+        cursor: col-resize;
+      }
     }
 
     &.drag:hover {
