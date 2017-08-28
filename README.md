@@ -7,6 +7,7 @@
 [![david][david-badge]][david]
 [![download][dl-badge]][apm-pkg-link]
 [![mit][mit-badge]][mit]
+[![All Contributors][contributors]](#contributors)
 
 Fully customizable wrap guides at arbitrary column positions.
 
@@ -123,10 +124,16 @@ of course free to change your `editor.preferredLineLength` setting before, durin
 after installing this package. Note also that these changes are both global and grammar
 specific.
 
-## Future Work
+## Contributors
 
-- More spec test coverage.
-- Up-to-date screenshots.
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+| [<img src="https://avatars1.githubusercontent.com/u/1903876?v=4" width="100px;"/><br /><sub>Amy Troschinetz</sub>](http://lexicalunit.com)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Alexicalunit "Bug reports") |
+| :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
 
 ---
 
@@ -155,3 +162,4 @@ specific.
 [img-guides]:                   https://cloud.githubusercontent.com/assets/1903876/8047184/b1fc4a9c-0e07-11e5-943f-ebffd647c2e0.png
 [language-specific-settings]:   http://blog.atom.io/2014/10/31/language-scoped-config.html
 [line-length-break]:            https://atom.io/packages/line-length-break
+[contributors]:                 https://img.shields.io/badge/all_contributors-0-orange.svg?style=shield
