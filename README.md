@@ -7,9 +7,9 @@
 [![david][david-badge]][david]
 [![download][dl-badge]][apm-pkg-link]
 [![mit][mit-badge]][mit]
-[![All Contributors][contributors]](#contributors)
+[![All Contributors][contributors]](#-contributors)
 
-Fully customizable wrap guides at arbitrary column positions.
+Fully customizable wrap guides at arbitrary column _and row_ positions.
 
 **Wrap guides!**
 
@@ -26,7 +26,7 @@ Fully customizable wrap guides at arbitrary column positions.
 
 ![create][img-create]
 
-## Integration with Line Length Break
+## 📐 Integration with Line Length Break
 
 The [`line-length-break`][line-length-break] package allows users to automatically hard break text
 at their editor's preferred line length. If you have this plugin installed, `multi-wrap-guide` will
@@ -34,7 +34,7 @@ add a context sensitive menu item (right click on a wrap guide) that will let yo
 selected wrap guide. Using the `Line Length Break: Break` will break at the farthest right wrap
 guide by default.
 
-## Configuration
+## ⚙️ Configuration
 
 By default, Multi Wrap Guide will use your `editor.preferredLineLength` setting or
 [language specific settings][language-specific-settings]. You can override this by editing your
@@ -60,7 +60,7 @@ Then add something like the following under the root `'*'` scope.
 > This affects preferences such as soft word wrap if you also have
 > `editor.softWrapAtPreferredLineLength` enabled.
 
-## Styling
+## ✨ Styling
 
 Configure styles applied to guides created by this package using your `styles.less` file. Open it
 with the following command.
@@ -110,7 +110,7 @@ atom-text-editor.editor {
 
 ![colors][img-colors]
 
-## Uninstallation
+## 🗑️ Uninstallation
 
 Activating this package **disables** the default Atom
 `wrap-guide` package automatically. To go back to using the default wrap guide you'll
@@ -124,9 +124,9 @@ of course free to change your `editor.preferredLineLength` setting before, durin
 after installing this package. Note also that these changes are both global and grammar
 specific.
 
-## Contributors
+## 💖 Contributors
 
-Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+Thanks goes to these wonderful people ([emoji key][emoji-key]):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 | [<img src="https://avatars1.githubusercontent.com/u/1903876?v=4" width="100px;"/><br /><sub>Amy Troschinetz</sub>](http://lexicalunit.com)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Alexicalunit "Bug reports") [💻](https://github.com/lexicalunit/multi-wrap-guide/commits?author=lexicalunit "Code") [📖](https://github.com/lexicalunit/multi-wrap-guide/commits?author=lexicalunit "Documentation") | [<img src="https://avatars2.githubusercontent.com/u/281467?v=4" width="100px;"/><br /><sub>Chris Tonkinson</sub>](http://chris.tonkinson.com/)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Acmtonkinson "Bug reports") | [<img src="https://avatars3.githubusercontent.com/u/7296578?v=4" width="100px;"/><br /><sub>Jackson Bailey</sub>](https://github.com/JacksonBailey)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3AJacksonBailey "Bug reports") | [<img src="https://avatars1.githubusercontent.com/u/383250?v=4" width="100px;"/><br /><sub>Jean Mertz</sub>](https://github.com/JeanMertz)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3AJeanMertz "Bug reports") | [<img src="https://avatars2.githubusercontent.com/u/3522333?v=4" width="100px;"/><br /><sub>Sami Kankaristo</sub>](http://indiumgames.fi)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Akankaristo "Bug reports") | [<img src="https://avatars2.githubusercontent.com/u/16280491?v=4" width="100px;"/><br /><sub>Pete Hanson</sub>](http://pdxwolfy.org)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Apdxwolfy "Bug reports") | [<img src="https://avatars0.githubusercontent.com/u/8146593?v=4" width="100px;"/><br /><sub>Ped</sub>](https://pedzed.com)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Apedzed "Bug reports") |
@@ -135,7 +135,8 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
 | [<img src="https://avatars3.githubusercontent.com/u/1215414?v=4" width="100px;"/><br /><sub>Simon Fridlund</sub>](https://github.com/zimme)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Azimme "Bug reports") |
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors][all-contributors]
+specification. Contributions of any kind welcome!
 
 ---
 
@@ -164,4 +165,6 @@ This project follows the [all-contributors](https://github.com/kentcdodds/all-co
 [img-guides]:                   https://cloud.githubusercontent.com/assets/1903876/8047184/b1fc4a9c-0e07-11e5-943f-ebffd647c2e0.png
 [language-specific-settings]:   http://blog.atom.io/2014/10/31/language-scoped-config.html
 [line-length-break]:            https://atom.io/packages/line-length-break
-[contributors]:                 https://img.shields.io/badge/all_contributors-0-orange.svg?style=shield
+[all-contributors]:             https://github.com/kentcdodds/all-contributors
+[contributors]:                 https://img.shields.io/badge/all_contributors-15-orange.svg?style=shield
+[emoji-key]:                    https://github.com/kentcdodds/all-contributors#emoji-key

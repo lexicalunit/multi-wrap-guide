@@ -22,12 +22,11 @@
   "homepage": "https://github.com/lexicalunit/multi-wrap-guide",
   "scripts": {
     "add": "all-contributors add",
-    "generate": "all-contributors generate"
+    "generate": "all-contributors generate",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "atom-space-pen-views": "^2.2.0",
     "etch": "^0.12.6",
-    "jquery": "^3.2.1",
     "sub-atom": "^1.1.0"
   },
   "devDependencies": {
