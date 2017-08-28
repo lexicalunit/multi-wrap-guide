@@ -44,6 +44,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "kankaristo",
+      "name": "Sami Kankaristo",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/3522333?v=4",
+      "profile": "http://indiumgames.fi",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
