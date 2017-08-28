@@ -1,7 +1,7 @@
 {
   "name": "multi-wrap-guide",
   "main": "./lib/multi-wrap-guide",
-  "version": "0.29.1",
+  "version": "1.0.0",
   "contributors": [
     "lexicalunit <lexicalunit@lexicalunit.com>"
   ],
