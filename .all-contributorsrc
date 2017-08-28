@@ -98,6 +98,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "ryran",
+      "name": "Ryan Sawhill Aroha",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1092618?v=4",
+      "profile": "http://people.redhat.com/rsawhill",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
