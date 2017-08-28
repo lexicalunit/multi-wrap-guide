@@ -14,7 +14,8 @@
       "profile": "http://lexicalunit.com",
       "contributions": [
         "bug",
-        "code"
+        "code",
+        "doc"
       ]
     }
   ]

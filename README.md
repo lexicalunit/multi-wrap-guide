@@ -129,7 +129,7 @@ specific.
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-| [<img src="https://avatars1.githubusercontent.com/u/1903876?v=4" width="100px;"/><br /><sub>Amy Troschinetz</sub>](http://lexicalunit.com)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Alexicalunit "Bug reports") [💻](https://github.com/lexicalunit/multi-wrap-guide/commits?author=lexicalunit "Code") |
+| [<img src="https://avatars1.githubusercontent.com/u/1903876?v=4" width="100px;"/><br /><sub>Amy Troschinetz</sub>](http://lexicalunit.com)<br />[🐛](https://github.com/lexicalunit/multi-wrap-guide/issues?q=author%3Alexicalunit "Bug reports") [💻](https://github.com/lexicalunit/multi-wrap-guide/commits?author=lexicalunit "Code") [📖](https://github.com/lexicalunit/multi-wrap-guide/commits?author=lexicalunit "Documentation") |
 | :---: |
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
