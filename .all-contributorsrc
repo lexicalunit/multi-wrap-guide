@@ -1,0 +1,148 @@
+{
+  "projectName": "multi-wrap-guide",
+  "projectOwner": "lexicalunit",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "lexicalunit",
+      "name": "Amy Troschinetz",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1903876?v=4",
+      "profile": "http://lexicalunit.com",
+      "contributions": [
+        "bug",
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "cmtonkinson",
+      "name": "Chris Tonkinson",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/281467?v=4",
+      "profile": "http://chris.tonkinson.com/",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "JacksonBailey",
+      "name": "Jackson Bailey",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/7296578?v=4",
+      "profile": "https://github.com/JacksonBailey",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "JeanMertz",
+      "name": "Jean Mertz",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/383250?v=4",
+      "profile": "https://github.com/JeanMertz",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "kankaristo",
+      "name": "Sami Kankaristo",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/3522333?v=4",
+      "profile": "http://indiumgames.fi",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "pdxwolfy",
+      "name": "Pete Hanson",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/16280491?v=4",
+      "profile": "http://pdxwolfy.org",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "pedzed",
+      "name": "Ped",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/8146593?v=4",
+      "profile": "https://pedzed.com",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "phoenixenero",
+      "name": "Phoenix C. Enero",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/9031092?v=4",
+      "profile": "http://coreleaf.net",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "piranna",
+      "name": "Jesús Leganés-Combarro",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/532414?v=4",
+      "profile": "http://pirannafs.blogspot.com",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "rugk",
+      "name": "rugk",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/11966684?v=4",
+      "profile": "https://github.com/rugk",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "ryran",
+      "name": "Ryan Sawhill Aroha",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1092618?v=4",
+      "profile": "http://people.redhat.com/rsawhill",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "X-G",
+      "name": "GU Xiaojun",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/6829403?v=4",
+      "profile": "https://github.com/X-G",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "zyklus",
+      "name": "Mark Kahn",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/320562?v=4",
+      "profile": "https://github.com/zyklus",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "adammw",
+      "name": "Adam Malcontenti-Wilson",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/153219?v=4",
+      "profile": "http://adammw.it.cx",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "zimme",
+      "name": "Simon Fridlund",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1215414?v=4",
+      "profile": "https://github.com/zimme",
+      "contributions": [
+        "bug"
+      ]
+    }
+  ]
+}
