@@ -17,6 +17,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "cmtonkinson",
+      "name": "Chris Tonkinson",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/281467?v=4",
+      "profile": "http://chris.tonkinson.com/",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
