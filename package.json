@@ -14,7 +14,7 @@
   "repository": "https://github.com/lexicalunit/multi-wrap-guide",
   "license": "MIT",
   "engines": {
-    "atom": ">=1.19 <2.0.0"
+    "atom": ">=1.23.0 <2.0.0"
   },
   "bugs": {
     "url": "https://github.com/lexicalunit/multi-wrap-guide/issues"
@@ -30,12 +30,12 @@
     "sub-atom": "^1.1.0"
   },
   "devDependencies": {
-    "all-contributors-cli": "^4.4.0",
-    "eslint": "^4.4.1",
+    "all-contributors-cli": "^4.6.0",
+    "eslint": "^4.10.0",
     "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-node": "^5.1.1",
-    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1"
   },
   "configSchema": {
