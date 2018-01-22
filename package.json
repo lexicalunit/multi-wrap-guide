@@ -26,13 +26,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "etch": "^0.12.6",
-    "sub-atom": "^1.1.0"
+    "etch": "^0.12.8"
   },
   "devDependencies": {
-    "all-contributors-cli": "^4.6.0",
-    "eslint": "^4.10.0",
-    "eslint-config-standard": "^10.2.1",
+    "all-contributors-cli": "^4.10.1",
+    "eslint": "^4.16.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
