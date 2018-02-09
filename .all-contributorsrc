@@ -143,6 +143,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "paradox460",
+      "name": "Jeff Sandberg",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/168193?v=4",
+      "profile": "http://paradox.io",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
