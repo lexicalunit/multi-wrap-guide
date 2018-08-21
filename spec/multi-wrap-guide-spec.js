@@ -115,7 +115,7 @@ describe('MultiWrapGuide', () => {
       expect(guide).toBeVisible()
 
       atom.config.set('editor.preferredLineLength', 20, {scopeSelector: '.text.plain.null-grammar'})
-      editor.setGrammar(atom.grammars.grammarForScopeName('text.plain.null-grammar'))
+      atom.grammars.assignLanguageMode(editor.getBuffer(), 'text.plain.null-grammar')
       advanceClock(1)
       guide = views[0].element.querySelector('.multi-wrap-guide')
       expect(getLeftPosition(guide)).toBeLessThan(initial)
