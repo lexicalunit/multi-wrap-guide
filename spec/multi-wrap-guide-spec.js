@@ -51,7 +51,7 @@ describe('MultiWrapGuide', () => {
       expect(guide).toExist()
       expect(getLeftPosition(guide)).toBeGreaterThan(0)
 
-      atom.workspace.getActivePane().splitRight({copyActiveItem: true})
+      atom.workspace.getActivePane().splitRight({ copyActiveItem: true })
       expect(atom.workspace.getTextEditors().length).toBe(2)
       views = getWrapGuideViews()
       expect(views.length).toBe(2)
@@ -114,7 +114,7 @@ describe('MultiWrapGuide', () => {
       expect(initial).toBeGreaterThan(0)
       expect(guide).toBeVisible()
 
-      atom.config.set('editor.preferredLineLength', 20, {scopeSelector: '.text.plain.null-grammar'})
+      atom.config.set('editor.preferredLineLength', 20, { scopeSelector: '.text.plain.null-grammar' })
       atom.grammars.assignLanguageMode(editor.getBuffer(), 'text.plain.null-grammar')
       advanceClock(1)
       guide = views[0].element.querySelector('.multi-wrap-guide')
@@ -125,7 +125,7 @@ describe('MultiWrapGuide', () => {
 
   return describe('scoped config', () => {
     it('::getDefaultColumn returns the scope-specific column value', () => {
-      atom.config.set('editor.preferredLineLength', 132, {scopeSelector: '.source.js'})
+      atom.config.set('editor.preferredLineLength', 132, { scopeSelector: '.source.js' })
       expect(MultiWrapGuide.views[editor.id].getColumns()[0]).toBe(132)
     })
   })
